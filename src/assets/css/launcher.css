@@ -264,21 +264,6 @@ input::-webkit-inner-spin-button {
     }
 }
 
-/* Modo streamer global */
-body.streamer-mode {
-    background: #7c3aed !important;
-    color: #fff !important;
-}
-body.streamer-mode .panel,
-body.streamer-mode .preload-content,
-body.streamer-mode .popup-tab,
-body.streamer-mode .profile-image,
-body.streamer-mode .player-head {
-    background: #7c3aed !important;
-    color: #fff !important;
-    border-color: #a78bfa !important;
-}
-
 /* Custom console overlay (improved visuals) */
 .custom-console {
     position: fixed;
