@@ -11,6 +11,7 @@ class Splash {
         this.splash = document.querySelector("#splash");
         this.logo = document.querySelector(".splash");
 
+        // Creamos los elementos si no existen
         this.splashMessage = document.querySelector(".splash-message") || this.createMessage("splash-message");
         this.message = document.querySelector(".message") || this.createMessage("message");
         this.progress = document.querySelector(".progress");
@@ -36,9 +37,11 @@ class Splash {
     }
 
     async startAnimation() {
+        // Mostramos el splash
         await this.sleep(300);
         this.splash.classList.add("visible");
 
+        // Mensajes iniciales
         this.message.textContent = "Preparando el launcher...";
         this.progress.value = 0;
         this.progress.max = 100;
@@ -52,9 +55,7 @@ class Splash {
         this.setStatus("Buscando actualizaciones...");
 
         ipcRenderer.invoke("update-app").catch(err => {
-            console.error("Update check failed:", err);
-            this.setStatus("No se pudo verificar actualizaciones, continuando...");
-            setTimeout(() => this.maintenanceCheck(), 2000);
+            return this.shutdown(`Error al buscar actualizaciones:<br>${err.message}`);
         });
 
         ipcRenderer.on("updateAvailable", () => {
@@ -68,9 +69,7 @@ class Splash {
         });
 
         ipcRenderer.on("error", (event, err) => {
-            console.error("Update error received:", err);
-            this.setStatus("Error al descargar actualización, continuando...");
-            setTimeout(() => this.maintenanceCheck(), 2000);
+            if (err) return this.shutdown(err.message);
         });
 
         ipcRenderer.on("download-progress", (event, progress) => {
