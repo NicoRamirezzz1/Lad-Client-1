@@ -46,26 +46,37 @@ function createWindow() {
             updateWindow.show();
         }
     });
-
-    ipcMain.on("main-window-open", () => {
-        console.log("Abrir ventana principal del launcher");
-    });
-
-    ipcMain.on("update-window-close", () => {
-        destroyWindow();
-    });
-
-    ipcMain.on("update-window-progress-load", () => {
-        console.log("Splash cargando...");
-    });
-
-    ipcMain.on("update-window-progress", (event, data) => {
-        const progress = data.progress / data.size;
-        if (updateWindow) {
-            updateWindow.setProgressBar(progress);
-        }
-    });
 }
+
+// Registrar listeners solo una vez, no dentro de createWindow()
+ipcMain.on("update-window-close", () => {
+    destroyWindow();
+});
+
+ipcMain.on("update-window-dev-tools", () => {
+    if (updateWindow) updateWindow.webContents.openDevTools({ mode: 'detach' });
+});
+
+ipcMain.on("update-window-progress-load", () => {
+    console.log("Splash cargando...");
+    if (updateWindow) {
+        updateWindow.setProgressBar(2);
+    }
+});
+
+ipcMain.on("update-window-progress", (event, data) => {
+    const progress = data.progress / data.size;
+    console.log("Progress:", progress);
+    if (updateWindow) {
+        updateWindow.setProgressBar(progress);
+    }
+});
+
+ipcMain.on("update-window-progress-reset", () => {
+    if (updateWindow) {
+        updateWindow.setProgressBar(-1);
+    }
+});
 
 app.whenReady().then(() => {
     createWindow();

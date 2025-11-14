@@ -61,20 +61,35 @@ class Launcher {
         console.log('Initializing Frame...')
         const platform = os.platform() === 'darwin' ? "darwin" : "other";
 
-        document.querySelector(`.${platform} .frame`).classList.toggle('hide')
+        const frameSelector = document.querySelector(`.${platform} .frame`);
+        if (frameSelector) {
+            frameSelector.classList.toggle('hide')
 
-        document.querySelector(`.${platform} .frame #minimize`).addEventListener('click', () => {
-            ipcRenderer.send('main-window-minimize');
-        });
+            const minimizeBtn = frameSelector.querySelector('#minimize');
+            if (minimizeBtn) {
+                minimizeBtn.addEventListener('click', () => {
+                    console.log('Minimize clicked');
+                    ipcRenderer.send('main-window-minimize');
+                });
+            }
 
-        let maximize = document.querySelector(`.${platform} .frame #maximize`);
-        if (maximize) {
-            maximize.style.display = 'none';
+            const maximizeBtn = frameSelector.querySelector('#maximize');
+            if (maximizeBtn) {
+                maximizeBtn.style.display = 'none';
+            }
+
+            const closeBtn = frameSelector.querySelector('#close');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    console.log('Close button clicked');
+                    ipcRenderer.send('main-window-close');
+                });
+            } else {
+                console.warn('Close button not found in frame');
+            }
+        } else {
+            console.warn('Frame selector not found for platform:', platform);
         }
-
-        document.querySelector(`.${platform} .frame #close`).addEventListener('click', () => {
-            ipcRenderer.send('main-window-close');
-        })
     }
 
     async initConfigClient() {
