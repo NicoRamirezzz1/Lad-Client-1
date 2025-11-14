@@ -15,6 +15,7 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-color: var(--background);
+    background: linear-gradient(135deg, var(--background) 0%, rgba(0,0,0,0.3) 100%);
     font-family: "Poppins", sans-serif;
     color: var(--color);
     overflow: hidden;
@@ -32,7 +33,7 @@ body {
 .splash {
     display: block;
     margin: 0 auto 18px;
-    width: 220px;         /* logo mÃ¡s grande */
+    width: 220px;         /* logo más grande */
     height: auto;
     transition: opacity .35s ease, transform .35s ease;
     opacity: 0;
@@ -53,7 +54,7 @@ body {
     transition: opacity .4s ease;
 }
 
-/* autor (pequeÃ±o) */
+/* autor (pequeño) */
 .splash-author {
     font: normal 11px/14px Poppins;
     margin: 2px 0 8px;
@@ -82,37 +83,39 @@ body {
 
 /* progress bar */
 .progress {
+    position: relative;
     width: 100%;
-    height: 14px;
+    height: 8px;
     appearance: none;
     -webkit-appearance: none;
-    border-radius: 10px;
+    border-radius: 4px;
+    border: none;
+    background-color: #969696;
     opacity: 0;
     transition: opacity .3s ease;
+    margin-top: 16px;
 }
 
 /* mostrar la barra */
-#splash.visible .progress,
 .progress.show {
     opacity: 1;
 }
 
 /* estilos del progress (webkit) */
 .progress::-webkit-progress-bar {
-    background-color: rgba(255,255,255,0.06);
-    border: 1px solid var(--element-color);
-    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
 }
 
 .progress::-webkit-progress-value {
     background: linear-gradient(90deg, var(--element-color), #ffffff);
-    border-radius: 10px;
-    transition: width 0.2s ease; /* animaciÃ³n suave al actualizar */
+    border-radius: 4px;
+    transition: width 0.2s ease;
 }
 
 /* estilos para Firefox (fallback) */
 .progress::-moz-progress-bar {
     background: linear-gradient(90deg, var(--element-color), #ffffff);
-    border-radius: 10px;
+    border-radius: 4px;
     transition: width 0.2s ease;
 }

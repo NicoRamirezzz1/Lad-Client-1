@@ -1,6 +1,6 @@
 /**
- * @author Luuxis
- * Luuxis License v1.0 (voir fichier LICENSE pour les détails en FR/EN)
+ * @author Darken
+ * @license CC-BY-NC 4.0 - https://creativecommons.org/licenses/by-nc/4.0
  */
 
 const { app, BrowserWindow, Menu } = require("electron");
@@ -28,15 +28,14 @@ function createWindow() {
         height: 720,
         minWidth: 980,
         minHeight: 552,
-        resizable: true,
-        maximizable: false, // <- deshabilitar maximizar desde el SO
+        resizable: false,
+        maximizable: false,
         icon: `./src/assets/images/icon.${os.platform() === "win32" ? "ico" : "png"}`,
         frame: false,
         show: false,
         webPreferences: {
             contextIsolation: false,
-            nodeIntegration: true,
-            devTools: false // <- impedir apertura de devtools desde renderer / atajos
+            nodeIntegration: true
         },
     });
     Menu.setApplicationMenu(null);

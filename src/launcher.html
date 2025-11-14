@@ -5,23 +5,21 @@
         <link rel="stylesheet" href="assets/css/launcher.css">
     </head>
     <body>
-        <div class="dragbar">
-            <div class="window-controls" role="toolbar" aria-label="Controles ventana">
-                <button id="minimize" class="window-btn window-btn-minimize" aria-label="Minimizar"></button>
-                <button id="close" class="window-btn window-btn-close" aria-label="Cerrar"></button>
+        <div class="dragbar"></div>
+        <div class="darwin">
+            <div class="frame">
+                <div id="close" class="button-frame darwin-icon-close"></div>
+                <div id="minimize" class="button-frame darwin-icon-minimize"></div>
+                <div id="maximize" class="button-frame darwin-icon-maximize"></div>
+
             </div>
         </div>
-
-        <div class="preload-content">
-            <div class="preload-progress">
-                <span class="dot"></span>
-                <div class="dots">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
+        <div class="other">
+            <div class="frame">
+                <div id="minimize" class="button-frame icon-minimize"></div>
+                <div id="maximize" class="button-frame icon-maximize"></div>
+                <div id="close" class="button-frame icon-close"></div>
             </div>
-            <div class="preload-title">Cargando...</div>
         </div>
 
         <div class="popup">

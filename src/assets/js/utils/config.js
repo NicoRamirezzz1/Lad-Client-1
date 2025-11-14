@@ -1,6 +1,6 @@
 /**
- * @author Luuxis
- * Luuxis License v1.0 (voir fichier LICENSE pour les détails en FR/EN)
+ * @author Darken
+ * @license CC-BY-NC 4.0 - https://creativecommons.org/licenses/by-nc/4.0
  */
 
 const pkg = require('../package.json');
@@ -9,7 +9,7 @@ const convert = require('xml-js');
 let url = pkg.user ? `${pkg.url}/${pkg.user}` : pkg.url
 
 let config = `${url}/launcher/config-launcher/config.json`;
-let news = `${url}/launcher/news-launcher/news.json`;
+let news = `${url}/launcher/news/news.json`;
 
 class Config {
     GetConfig() {

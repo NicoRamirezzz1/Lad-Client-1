@@ -1,16 +1,54 @@
 /**
- * @author NicoGominola
+ * @author Luuxis
+ * Luuxis License v1.0 (voir fichier LICENSE pour les détails en FR/EN)
  */
 
 const { app, ipcMain, nativeTheme } = require('electron');
 const { Microsoft } = require('minecraft-java-core');
 const { autoUpdater } = require('electron-updater')
-
 const path = require('path');
 const fs = require('fs');
+const RPC = require('discord-rpc');
 
 const UpdateWindow = require("./assets/js/windows/updateWindow.js");
 const MainWindow = require("./assets/js/windows/mainWindow.js");
+
+const CLIENT_ID = '1438603630818234568';
+RPC.register(CLIENT_ID);
+
+const rpc = new RPC.Client({ transport: 'ipc' });
+
+let currentInstance = 'Sin seleccionar';
+let currentPanel = 'home';
+
+async function setActivity(instanceName = currentInstance, panelName = currentPanel) {
+    if (!rpc) return;
+
+    let details = 'En el menú principal';
+    if (panelName === 'settings') {
+        details = 'Configurando Launcher';
+    } else if (panelName === 'login') {
+        details = 'En el login';
+    }
+
+    rpc.setActivity({
+        startTimestamp: new Date(),
+        largeImageKey: 'launcher_logo',
+        largeImageText: 'Bridge Client',
+        smallImageKey: 'icon',
+        smallImageText: 'Preparándome para jugar',
+        details: details,
+        state: `Jugando: ${instanceName}`,
+        instance: true,
+    });
+}
+
+rpc.on('ready', () => {
+    console.log('Rich Presence conectado.');
+    setActivity();
+});
+
+rpc.login({ clientId: CLIENT_ID }).catch(console.error);
 
 let dev = process.env.NODE_ENV === 'dev';
 
@@ -69,83 +107,21 @@ ipcMain.handle('is-dark-theme', (_, theme) => {
     return nativeTheme.shouldUseDarkColors;
 })
 
+ipcMain.on('instance-changed', (event, data) => {
+    currentInstance = data.instanceName;
+    setActivity(currentInstance, currentPanel);
+    console.log(`Instancia cambió a: ${currentInstance}`);
+})
+
+ipcMain.on('panel-changed', (event, data) => {
+    currentPanel = data.panelName;
+    setActivity(currentInstance, currentPanel);
+    console.log(`Panel cambió a: ${currentPanel}`);
+})
+
 app.on('window-all-closed', () => app.quit());
 
-let startedAppTime = Date.now();
-
-const rpc = require('discord-rpc');
-let client = new rpc.Client({ transport: 'ipc' });
-
-ipcMain.on('new-status-discord', async () => {
-    client.login({ clientId: '1434969441757565040' });
-    client.on('ready', () => {
-        client.request('SET_ACTIVITY', {
-            pid: process.pid,
-            activity: {
-                details: 'En Menú Principal',
-                assets: {
-                    large_image: 'launcher',
-                },
-                instance: false,
-                timestamps: {
-                    start: startedAppTime
-                }
-            },
-        });
-    });
-});
-
-
-ipcMain.on('new-status-discord-jugando', async (event, status) => { 
-    console.log(status)
-    if(client) await client.destroy();
-    client = new rpc.Client({ transport: 'ipc' });
-    client.login({ clientId: '1434969441757565040' });
-    client.on('ready', () => {
-        client.request('SET_ACTIVITY', {
-            pid: process.pid,
-            activity: {
-                details: 'Jugando a ' + status.nombre,
-                assets: {
-                    large_image: 'launcher',
-                    small_image: 'jugando',
-                },
-                instance: false,
-                timestamps: {
-                    start: startedAppTime
-                }
-            },
-        });
-    });
-});
-
-ipcMain.on('delete-and-new-status-discord', async () => { 
-    if(client) client.destroy();
-    client = new rpc.Client({ transport: 'ipc' });
-    client.login({ clientId: '1434969441757565040' });
-    client.on('ready', () => {
-        client.request('SET_ACTIVITY', {
-            pid: process.pid,
-            activity: {
-                details: 'En Menú Principal',
-                assets: {
-                    large_image: 'launcher',
-                },
-                instance: false,
-                timestamps: {
-                    start: startedAppTime
-                }
-            },
-        });
-    });
-});
-
-autoUpdater.setFeedURL({
-    provider: 'github',
-    owner: 'Skeppymcc',
-    repo: 'Lad-Client',
-    token: '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',
-});
+ 
 
 autoUpdater.autoDownload = false;
 
@@ -161,13 +137,6 @@ ipcMain.handle('update-app', async () => {
         })
     })
 })
-
-autoUpdater.setFeedURL({
-    provider: 'github',
-    owner: 'Skeppymcc',
-    repo: 'Lad-Client',
-    token: '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',
-});
 
 autoUpdater.on('update-available', () => {
     const updateWindow = UpdateWindow.getWindow();

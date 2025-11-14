@@ -1,6 +1,6 @@
 /**
- * @author Luuxis
- * Luuxis License v1.0 (voir fichier LICENSE pour les détails en FR/EN)
+ * @author Darken
+ * @license CC-BY-NC 4.0 - https://creativecommons.org/licenses/by-nc/4.0
  */
 
 const { ipcRenderer } = require('electron')
@@ -16,66 +16,53 @@ import { skin2D } from './utils/skin.js';
 import slider from './utils/slider.js';
 
 async function setBackground(theme) {
-    let databaseLauncher = new database();
-    let configClient;
-    if (typeof theme == 'undefined') {
-        configClient = await databaseLauncher.readData('configClient');
-        theme = configClient?.launcher_config?.theme || "auto"
-        theme = await ipcRenderer.invoke('is-dark-theme', theme).then(res => res)
-    } else {
-        // When called with explicit theme, still fetch config for custom theme
-        configClient = await databaseLauncher.readData('configClient');
-    }
-    let background
     let body = document.body;
-    // Preserve existing classes (e.g., streamer-mode)
-    let keep = new Set((body.className || '').split(/\s+/).filter(Boolean));
-    keep.delete('dark'); keep.delete('light'); keep.delete('global'); keep.delete('custom-theme');
-    keep.add(theme ? 'dark' : 'light');
-    keep.add('global');
-    // Apply custom theme class if enabled
-    const custom = configClient?.launcher_config?.custom_theme;
-    if (custom?.enabled) keep.add('custom-theme');
-    body.className = Array.from(keep).join(' ');
-
-    // Apply custom CSS variables if enabled
-    if (custom?.enabled) {
-        const root = document.documentElement;
-        try {
-            root.style.setProperty('--color', custom.color || '#F5F5F5');
-            root.style.setProperty('--background', custom.background || '#292929');
-            root.style.setProperty('--background-element', custom.backgroundElement || '#424242');
-            root.style.setProperty('--background-transparent', custom.backgroundTransparent || 'rgba(44,44,44,0.8)');
-            root.style.setProperty('--element-color', custom.elementColor || '#0078bd');
-        } catch (_) {}
-    } else {
-        // Clear inline overrides to fall back to theme.css
-        const root = document.documentElement;
-        ['--color','--background','--background-element','--background-transparent','--element-color']
-            .forEach(v => { try { root.style.removeProperty(v); } catch(_){} });
-    }
-    if (fs.existsSync(`${__dirname}/assets/images/background/easterEgg`) && Math.random() < 0.005) {
-        let backgrounds = fs.readdirSync(`${__dirname}/assets/images/background/easterEgg`);
-        let Background = backgrounds[Math.floor(Math.random() * backgrounds.length)];
-        background = `url(./assets/images/background/easterEgg/${Background})`;
-    } else if (fs.existsSync(`${__dirname}/assets/images/background/${theme ? 'dark' : 'light'}`)) {
-        let backgrounds = fs.readdirSync(`${__dirname}/assets/images/background/${theme ? 'dark' : 'light'}`);
-        let Background = backgrounds[Math.floor(Math.random() * backgrounds.length)];
-        background = `linear-gradient(#00000080, #00000080), url(./assets/images/background/${theme ? 'dark' : 'light'}/${Background})`;
-    }
-    body.style.backgroundImage = background ? background : theme ? '#000' : '#fff';
+    body.className = theme ? 'dark global' : 'light global';
+    let backgroundPath = './assets/images/background/dark/1.png';
+    body.style.backgroundImage = `linear-gradient(#00000000, #00000080), url(${backgroundPath})`;
     body.style.backgroundSize = 'cover';
 }
 
+
 async function changePanel(id) {
     let panel = document.querySelector(`.${id}`);
-    if (!panel) {
-        console.warn(`changePanel: panel '.${id}' not found`);
-        return;
+    if (!panel) return;
+    let active = document.querySelector(`.active`)
+    if (active) active.classList.remove("active");
+
+    if (id === 'settings' || id === 'login') {
+        await setBackground(false);
     }
-    let active = document.querySelector(`.active`);
-    if (active) active.classList.toggle("active");
+
+    try {
+        if (id !== 'settings') {
+            const activeSettingsBTN = document.querySelector('.active-settings-BTN');
+            const activeContainerSettings = document.querySelector('.active-container-settings');
+            if (activeSettingsBTN) activeSettingsBTN.classList.remove('active-settings-BTN');
+            if (activeContainerSettings) activeContainerSettings.classList.remove('active-container-settings');
+            const cancelHome = document.querySelector('.cancel-home');
+            if (cancelHome) cancelHome.style.display = 'none';
+        }
+    } catch (err) {
+        console.error('changePanel cleanup error', err);
+    }
+
+    try {
+        const panels = document.querySelectorAll('.panel');
+        panels.forEach(p => {
+            if (p === panel) {
+                p.style.display = 'block';
+            } else {
+                p.style.display = 'none';
+                p.classList.remove('active');
+            }
+        })
+    } catch (err) {
+    }
+
     panel.classList.add("active");
+
+    ipcRenderer.send('panel-changed', { panelName: id });
 }
 
 async function appdata() {
@@ -88,10 +75,11 @@ async function addAccount(data) {
     let div = document.createElement("div");
     div.classList.add("account");
     div.id = data.ID;
+    const accountName = data.name || data.profile?.name || 'Unknown Account';
     div.innerHTML = `
         <div class="profile-image" ${skin ? 'style="background-image: url(' + skin + ');"' : ''}></div>
         <div class="profile-infos">
-            <div class="profile-pseudo">${data.name}</div>
+            <div class="profile-pseudo">${accountName}</div>
             <div class="profile-uuid">${data.uuid}</div>
         </div>
         <div class="delete-profile" id="${data.ID}">
@@ -122,7 +110,7 @@ async function setStatus(opt) {
 
     if (!opt) {
         statusServerElement.classList.add('red')
-        statusServerElement.innerHTML = `Instancia Actual - 0 ms`
+        statusServerElement.innerHTML = `Ferme - 0 ms`
         document.querySelector('.status-player-count').classList.add('red')
         playersOnline.innerHTML = '0'
         return
@@ -136,11 +124,11 @@ async function setStatus(opt) {
     if (!statusServer.error) {
         statusServerElement.classList.remove('red')
         document.querySelector('.status-player-count').classList.remove('red')
-        statusServerElement.innerHTML = `Instancia Actual - ${statusServer.ms} ms`
+        statusServerElement.innerHTML = `En Linea - ${statusServer.ms} ms`
         playersOnline.innerHTML = statusServer.playersConnect
     } else {
         statusServerElement.classList.add('red')
-        statusServerElement.innerHTML = `Instancia Actual - 0 ms`
+        statusServerElement.innerHTML = `Farm - 0 ms`
         document.querySelector('.status-player-count').classList.add('red')
         playersOnline.innerHTML = '0'
     }
@@ -162,6 +150,3 @@ export {
     pkg as pkg,
     setStatus as setStatus
 }
-
-// Removed: Global Streamer Mode utilities and window.applyStreamerMode
-// The streamer mode feature was removed to avoid leaking/masking UI content.

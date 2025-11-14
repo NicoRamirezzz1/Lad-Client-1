@@ -1,32 +1,30 @@
 <div class="settings-container">
-    <!-- Sidebar with tabs -->
-    <div class="settings-sidebar">
-        <div class="sidebar-header">
+    <!-- Header with Tabs Navigation -->
+    <div class="settings-header">
+        <div class="settings-title">
             <span class="settings-icon">⚙️</span>
-            <h2>Config</h2>
+            <h1>Configuración</h1>
         </div>
-        <div class="settings-tabs">
+        <nav class="settings-tabs">
             <div id="account" class="settings-tab active-tab">
                 <span class="tab-icon">👤</span>
                 <span class="tab-label">Cuentas</span>
             </div>
             <div id="java" class="settings-tab">
-                <span class="tab-icon">⚡</span>
+                <span class="tab-icon">💾</span>
                 <span class="tab-label">RAM</span>
             </div>
             <div id="resolution" class="settings-tab">
-                <span class="tab-icon">📺</span>
+                <span class="tab-icon">🖥️</span>
                 <span class="tab-label">Resolución</span>
             </div>
             <div id="launcher" class="settings-tab">
                 <span class="tab-icon">ℹ️</span>
                 <span class="tab-label">Launcher</span>
             </div>
-        </div>
+        </nav>
+        <button class="settings-close-btn-mobile">✕</button>
     </div>
-
-    <!-- Close button -->
-    <button id="save" class="settings-close-btn">✕</button>
 
     <!-- Content area -->
     <div class="settings-content">
@@ -127,20 +125,6 @@
                 <p class="panel-subtitle">Configuración y detalles del launcher</p>
             </div>
             
-            <!-- About card -->
-            <div class="settings-card">
-                <div class="card-title">Acerca de Lad Client</div>
-                <div class="card-content">
-                    <p class="launcher-info">
-                        Este launcher fue creado por <strong>@ImD4rken y @NicoGominola</strong>, Admin y Director de Lad Studio.
-                        El launcher Está hecho para jugar muchos eventos tanto para usuarios premium como no premium.
-                        Le damos las gracias al equipo y a la comunidad por formar parte de este proyecto.
-                    </p>
-                </div>
-            </div>
-
-
-
             <!-- Close behavior card -->
             <div class="settings-card">
                 <div class="card-title">Comportamiento al Cerrar</div>
@@ -200,6 +184,25 @@
                     </div>
                 </div>
             </div>
+
+            <!-- About card (final) -->
+            <div class="settings-card">
+                <div class="card-title">Acerca de Bridge Client</div>
+                <div class="card-content">
+                    <p class="launcher-info">
+                        Este launcher fue creado por <strong>@ImD4rken</strong>, Owner de Bridge Studio. 
+                        Está hecho para jugar muchos eventos tanto para usuarios premium como no premium.
+                        Le damos las gracias al equipo y a la comunidad por formar parte de este proyecto.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Close Button Footer -->
+        <div class="settings-footer">
+            <button id="save" class="settings-close-btn">
+                <span>✕ Cerrar</span>
+            </button>
         </div>
     </div>
 </div>

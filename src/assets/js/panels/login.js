@@ -1,7 +1,3 @@
-/**
- * @author Luuxis
- * Luuxis License v1.0 (voir fichier LICENSE pour les détails en FR/EN)
- */
 const { AZauth, Mojang } = require('minecraft-java-core');
 const { ipcRenderer } = require('electron');
 
@@ -9,57 +5,84 @@ import { popup, database, changePanel, accountSelect, addAccount, config, setSta
 
 class Login {
     static id = "login";
+
     async init(config) {
         this.config = config;
         this.db = new database();
 
-        if (typeof this.config.online == 'boolean') {
-            this.config.online ? this.getMicrosoft() : this.getCrack()
-        } else if (typeof this.config.online == 'string') {
-            if (this.config.online.match(/^(http|https):\/\/[^ "]+$/)) {
-                this.getAZauth();
-            }
-        }
-        
-        document.querySelector('.cancel-home').addEventListener('click', () => {
-            document.querySelector('.cancel-home').style.display = 'none'
-            changePanel('settings')
+        this.showTab('.login-select');
+
+        document.querySelector('.select-microsoft').addEventListener('click', () => {
+            this.showMicrosoftLogin();
         });
 
-        document.querySelector('.cancel-mojang').addEventListener('click', () => {
-            document.querySelector('.login-card-mojang').style.display = 'none'
-            document.querySelector('.login-tabs').style.display = 'block'
-        })
+        document.querySelector('.select-offline').addEventListener('click', () => {
+            this.showOfflineLogin();
+        });
+
+        document.querySelector('.cancel-home').addEventListener('click', () => {
+            this.showTab('.login-select');
+        });
+
+        document.querySelector('.cancel-offline').addEventListener('click', () => {
+            this.showTab('.login-select');
+        });
+
+        const cancelAZauth = document.querySelector('.cancel-AZauth');
+        if(cancelAZauth){
+            cancelAZauth.addEventListener('click', () => {
+                this.showTab('.login-select');
+            });
+        }
+
+        const cancelAZauthA2F = document.querySelector('.cancel-AZauth-A2F');
+        if(cancelAZauthA2F){
+            cancelAZauthA2F.addEventListener('click', () => {
+                this.showTab('.login-select');
+            });
+        }
+    }
+
+    showTab(selector) {
+        document.querySelectorAll('.login-tabs').forEach(tab => {
+            tab.style.display = 'none';
+        });
+        const tab = document.querySelector(selector);
+        if(tab) tab.style.display = 'block';
+    }
+
+    showMicrosoftLogin() {
+        this.showTab('.login-home');
+        this.getMicrosoft();
+    }
+
+    showOfflineLogin() {
+        this.showTab('.login-offline');
+        this.getCrack();
     }
 
     async getMicrosoft() {
-        console.log('Iniciando inicio de sesion Microsoft...');
-        let popupLogin = new popup();
-        let loginHome = document.querySelector('.login-home');
-        let microsoftBtn = document.querySelector('.connect-home');
-        let crackBtn = document.querySelector('.connectcrack');
-        loginHome.style.display = 'block';
+        console.log('Initializing Microsoft login...');
+        const popupLogin = new popup();
+        const microsoftBtn = document.querySelector('.connect-home');
 
-        crackBtn.addEventListener("click", () => {
-            this.getCrack();
-            document.querySelector('.login-tabs').style.display = 'none'
-        });
-        microsoftBtn.addEventListener("click", () => {
+        microsoftBtn.replaceWith(microsoftBtn.cloneNode(true));
+        const btn = document.querySelector('.connect-home');
+
+        btn.addEventListener("click", () => {
             popupLogin.openPopup({
-                title: 'Cargando Cuenta...',
-                content: 'Sigue las instrucciones porfavor...',
+                title: 'Conectando',
+                content: 'Espere por favor...',
                 color: 'var(--color)'
             });
 
             ipcRenderer.invoke('Microsoft-window', this.config.client_id).then(async account_connect => {
-                if (account_connect == 'cancel' || !account_connect) {
+                if (!account_connect || account_connect === 'cancel') {
                     popupLogin.closePopup();
                     return;
-                } else {
-                    await this.saveData(account_connect)
-                    popupLogin.closePopup();
                 }
-
+                await this.saveData(account_connect);
+                popupLogin.closePopup();
             }).catch(err => {
                 popupLogin.openPopup({
                     title: 'Error',
@@ -67,177 +90,153 @@ class Login {
                     options: true
                 });
             });
-        })
+        });
     }
 
     async getCrack() {
-        console.log('Iniciando inicio de sesion offline...');
-        let popupLogin = new popup();
-        let loginOffline = document.querySelector('.login-card-mojang');
+        console.log('Initializing offline login...');
+        const popupLogin = new popup();
+        const emailOffline = document.querySelector('.email-offline');
+        const connectOffline = document.querySelector('.connect-offline');
 
-        let emailOffline = document.querySelector('.Mail');
-        let connectOffline = document.querySelector('.login-btn');
-        loginOffline.style.display = 'block';
+        connectOffline.replaceWith(connectOffline.cloneNode(true));
+        const btn = document.querySelector('.connect-offline');
 
-        // Elimina listeners previos para evitar duplicados
-        let newConnectOffline = connectOffline.cloneNode(true);
-        connectOffline.parentNode.replaceChild(newConnectOffline, connectOffline);
-        connectOffline = newConnectOffline;
-
-        connectOffline.addEventListener('click', async () => {
-            if (emailOffline.value.length < 3) {
+        btn.addEventListener('click', async () => {
+            const nick = emailOffline.value.trim();
+            if (nick.length < 3) {
                 popupLogin.openPopup({
                     title: 'Error',
-                    content: 'Tu username debe de contener almenos 3 caracteres.',
+                    content: 'Tu Nick debe tener al menos 3 caracteres.',
+                    options: true
+                });
+                return;
+            }
+            if (nick.includes(' ')) {
+                popupLogin.openPopup({
+                    title: 'Error',
+                    content: 'Tu Nick no debe contener espacios.',
                     options: true
                 });
                 return;
             }
 
-            if (emailOffline.value.match(/ /g)) {
+            const MojangConnect = await Mojang.login(nick);
+            if (MojangConnect.error) {
                 popupLogin.openPopup({
                     title: 'Error',
-                    content: 'Tu username no puede contener d\'Espacios.',
+                    content: MojangConnect.message,
                     options: true
                 });
                 return;
             }
-
-            let MojangConnect = await Mojang.login(emailOffline.value);
-
-            // Validación estricta de datos
-            if (
-                MojangConnect.error ||
-                !MojangConnect ||
-                typeof MojangConnect !== 'object' ||
-                !MojangConnect.name ||
-                !MojangConnect.uuid
-            ) {
-                popupLogin.openPopup({
-                    title: 'Error',
-                    content: MojangConnect && MojangConnect.message ? MojangConnect.message : 'No se pudo iniciar sesión correctamente. Intenta de nuevo.',
-                    options: true
-                });
-                return;
-            }
-            await this.saveData(MojangConnect)
+            await this.saveData(MojangConnect);
             popupLogin.closePopup();
         });
     }
 
     async getAZauth() {
-        console.log('Iniciando inicio de sesion AZauth...');
-        let AZauthClient = new AZauth(this.config.online);
-        let PopupLogin = new popup();
-        let loginAZauth = document.querySelector('.login-AZauth');
-        let loginAZauthA2F = document.querySelector('.login-AZauth-A2F');
-
-        let AZauthEmail = document.querySelector('.email-AZauth');
-        let AZauthPassword = document.querySelector('.password-AZauth');
-        let AZauthA2F = document.querySelector('.A2F-AZauth');
-        let connectAZauthA2F = document.querySelector('.connect-AZauth-A2F');
-        let AZauthConnectBTN = document.querySelector('.connect-AZauth');
-        let AZauthCancelA2F = document.querySelector('.cancel-AZauth-A2F');
-
-        loginAZauth.style.display = 'block';
-
-        AZauthConnectBTN.addEventListener('click', async () => {
-            PopupLogin.openPopup({
-                title: 'Cargando Cuenta...',
-                content: 'Porfavor sigue las instrucciones...',
-                color: 'var(--color)'
-            });
-
-            if (AZauthEmail.value == '' || AZauthPassword.value == '') {
-                PopupLogin.openPopup({
-                    title: 'Error',
-                    content: 'Debes de ingresar una contraseña',
-                    options: true
-                });
-                return;
-            }
-
-            let AZauthConnect = await AZauthClient.login(AZauthEmail.value, AZauthPassword.value);
-
-            if (AZauthConnect.error) {
-                PopupLogin.openPopup({
-                    title: 'Error',
-                    content: AZauthConnect.message,
-                    options: true
-                });
-                return;
-            } else if (AZauthConnect.A2F) {
-                loginAZauthA2F.style.display = 'block';
-                loginAZauth.style.display = 'none';
-                PopupLogin.closePopup();
-
-                AZauthCancelA2F.addEventListener('click', () => {
-                    loginAZauthA2F.style.display = 'none';
-                    loginAZauth.style.display = 'block';
-                });
-
-                connectAZauthA2F.addEventListener('click', async () => {
-                    PopupLogin.openPopup({
-                        title: 'Cargando Cuenta...',
-                        content: 'Porfavor sigue las instrucciones...',
-                        color: 'var(--color)'
-                    });
-
-                    if (AZauthA2F.value == '') {
-                        PopupLogin.openPopup({
-                            title: 'Error',
-                            content: 'Debes ingresar el codigo A2F.',
-                            options: true
-                        });
-                        return;
-                    }
-
-                    AZauthConnect = await AZauthClient.login(AZauthEmail.value, AZauthPassword.value, AZauthA2F.value);
-
-                    if (AZauthConnect.error) {
-                        PopupLogin.openPopup({
-                            title: 'Error',
-                            content: AZauthConnect.message,
-                            options: true
-                        });
-                        return;
-                    }
-
-                    await this.saveData(AZauthConnect)
-                    PopupLogin.closePopup();
-                });
-            } else if (!AZauthConnect.A2F) {
-                await this.saveData(AZauthConnect)
-                PopupLogin.closePopup();
-            }
-        });
     }
 
     async saveData(connectionData) {
-        let configClient = await this.db.readData('configClient');
-        let account = await this.db.createData('accounts', connectionData)
-        let instanceSelect = configClient.instance_selct
-        let instancesList = await config.getInstanceList()
+        console.log('[Login] Raw Microsoft response:', JSON.stringify(connectionData, null, 2));
+        console.log('[Login] connectionData keys:', Object.keys(connectionData));
+        console.log('[Login] connectionData.profile keys:', Object.keys(connectionData.profile || {}));
+        
+        let extractedName = null;
+        
+        if (connectionData.name) {
+            extractedName = connectionData.name;
+            console.log('[Login] Using connectionData.name:', extractedName);
+        } else if (connectionData.profile?.name) {
+            extractedName = connectionData.profile.name;
+            console.log('[Login] Using profile.name:', extractedName);
+        } else if (connectionData.profile?.xboxProfile?.gamertag) {
+            extractedName = connectionData.profile.xboxProfile.gamertag;
+            console.log('[Login] Using xboxProfile.gamertag:', extractedName);
+        } else if (connectionData.profile?.xboxProfile?.username) {
+            extractedName = connectionData.profile.xboxProfile.username;
+            console.log('[Login] Using xboxProfile.username:', extractedName);
+        } else if (connectionData.profile?.realName) {
+            extractedName = connectionData.profile.realName;
+            console.log('[Login] Using profile.realName:', extractedName);
+        } else if (connectionData.profile?.displayName) {
+            extractedName = connectionData.profile.displayName;
+            console.log('[Login] Using profile.displayName:', extractedName);
+        } else if (connectionData.uuid) {
+            extractedName = connectionData.uuid;
+            console.log('[Login] Using uuid as fallback:', extractedName);
+        }
+        
+        if (!extractedName) {
+            console.warn('[Login] Could not extract name from any property! Profile:', connectionData.profile);
+            extractedName = 'Unknown Account';
+        }
+        
+        connectionData.name = extractedName;
+        console.log('[Login] Final extracted name:', connectionData.name);
+
+        const configClient = await this.db.readData('configClient');
+        const account = await this.db.createData('accounts', connectionData);
+        
+        if (!account.name || account.name === 'Unknown Account') {
+            if (connectionData.profile?.name) {
+                account.name = connectionData.profile.name;
+            } else if (connectionData.profile?.xboxProfile?.gamertag) {
+                account.name = connectionData.profile.xboxProfile.gamertag;
+            } else if (extractedName && extractedName !== 'Unknown Account') {
+                account.name = extractedName;
+            }
+            
+            if (account.name && account.name !== 'Unknown Account') {
+                console.log(`[Login] Account name corrected after createData: ${account.name}`);
+                await this.db.updateData('accounts', account, account.ID);
+            }
+        }
+        const instanceSelect = configClient.instance_selct;
+        const instancesList = await config.getInstanceList();
+
         configClient.account_selected = account.ID;
 
-        for (let instance of instancesList) {
-            if (instance.whitelistActive) {
-                let whitelist = instance.whitelist.find(whitelist => whitelist == account.name)
-                if (whitelist !== account.name) {
-                    if (instance.name == instanceSelect) {
-                        let newInstanceSelect = instancesList.find(i => i.whitelistActive == false)
-                        configClient.instance_selct = newInstanceSelect.name
-                        await setStatus(newInstanceSelect.status)
+        try {
+            for (let instance of instancesList) {
+                if (instance.whitelistActive) {
+                    const whitelist = instance.whitelist.find(u => u === account.name);
+                    if (whitelist !== account.name && instance.name === instanceSelect) {
+                        const newInstanceSelect = instancesList.find(i => !i.whitelistActive);
+                        if (newInstanceSelect) {
+                            configClient.instance_selct = newInstanceSelect.name;
+                            await setStatus(newInstanceSelect.status);
+                        }
                     }
                 }
             }
+        } catch (err) {
+            console.warn('Error while adjusting instance selection for new account:', err);
         }
 
         await this.db.updateData('configClient', configClient);
-        await addAccount(account);
-        await accountSelect(account);
-        document.querySelector(".preload-content").style.display = "none";
-        changePanel('home');
+
+        try {
+            await addAccount(account);
+        } catch (err) {
+            console.warn('addAccount failed (UI list update) but account was created:', err);
+        }
+
+        try {
+            await accountSelect(account);
+        } catch (err) {
+            console.warn('accountSelect failed (UI selection) but account was created:', err);
+        }
+
+        try {
+            changePanel('home');
+        } catch (err) {
+            console.error('changePanel to home failed after login:', err);
+        }
+
+        return account;
     }
 }
+
 export default Login;
