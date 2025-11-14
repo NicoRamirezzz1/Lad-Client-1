@@ -145,31 +145,28 @@ class Login {
         
         let extractedName = null;
         
-        if (connectionData.name) {
-            extractedName = connectionData.name;
-            console.log('[Login] Using connectionData.name:', extractedName);
-        } else if (connectionData.profile?.name) {
-            extractedName = connectionData.profile.name;
-            console.log('[Login] Using profile.name:', extractedName);
-        } else if (connectionData.profile?.xboxProfile?.gamertag) {
-            extractedName = connectionData.profile.xboxProfile.gamertag;
-            console.log('[Login] Using xboxProfile.gamertag:', extractedName);
-        } else if (connectionData.profile?.xboxProfile?.username) {
-            extractedName = connectionData.profile.xboxProfile.username;
-            console.log('[Login] Using xboxProfile.username:', extractedName);
-        } else if (connectionData.profile?.realName) {
-            extractedName = connectionData.profile.realName;
-            console.log('[Login] Using profile.realName:', extractedName);
-        } else if (connectionData.profile?.displayName) {
-            extractedName = connectionData.profile.displayName;
-            console.log('[Login] Using profile.displayName:', extractedName);
-        } else if (connectionData.uuid) {
-            extractedName = connectionData.uuid;
-            console.log('[Login] Using uuid as fallback:', extractedName);
+        const searchOrder = [
+            { path: 'name', desc: 'connectionData.name' },
+            { path: 'profile.name', desc: 'profile.name' },
+            { path: 'profile.xboxProfile.gamertag', desc: 'xboxProfile.gamertag' },
+            { path: 'profile.xboxProfile.username', desc: 'xboxProfile.username' },
+            { path: 'profile.realName', desc: 'profile.realName' },
+            { path: 'profile.displayName', desc: 'profile.displayName' },
+            { path: 'profile.id', desc: 'profile.id' },
+            { path: 'uuid', desc: 'uuid' }
+        ];
+        
+        for (let { path, desc } of searchOrder) {
+            const value = path.split('.').reduce((obj, key) => obj?.[key], connectionData);
+            if (value && typeof value === 'string' && value.trim()) {
+                extractedName = value.trim();
+                console.log('[Login] Using', desc, ':', extractedName);
+                break;
+            }
         }
         
         if (!extractedName) {
-            console.warn('[Login] Could not extract name from any property! Profile:', connectionData.profile);
+            console.warn('[Login] Could not extract name from any property! Full response:', JSON.stringify(connectionData, null, 2));
             extractedName = 'Unknown Account';
         }
         
