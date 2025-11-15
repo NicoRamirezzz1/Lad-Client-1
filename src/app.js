@@ -77,8 +77,42 @@ ipcMain.on('main-window-dev-tools-close', () => {
     if (window) window.webContents.closeDevTools()
 })
 ipcMain.on('main-window-close', () => {
-    console.log('Closing main window...');
-    MainWindow.destroyWindow()
+    console.log('main-window-close requested, behavior=', closeBehavior);
+    const window = MainWindow.getWindow();
+
+    if (closeBehavior === 'close-all') {
+        // close everything (existing behavior)
+        MainWindow.destroyWindow();
+        return;
+    }
+
+    if (!window) return;
+
+    if (closeBehavior === 'close-launcher') {
+        // hide the main window so the app stays running in background
+        try {
+            window.hide();
+            console.log('Main window hidden (close-launcher)');
+        } catch (e) {
+            console.warn('Failed to hide window, falling back to close:', e);
+            MainWindow.destroyWindow();
+        }
+        return;
+    }
+
+    if (closeBehavior === 'close-none') {
+        // do not close: minimize to taskbar/tray as a friendly fallback
+        try {
+            window.minimize();
+            console.log('Main window minimized (close-none)');
+        } catch (e) {
+            console.warn('Failed to minimize window, ignoring close:', e);
+        }
+        return;
+    }
+
+    // fallback: destroy
+    MainWindow.destroyWindow();
 })
 ipcMain.on('main-window-reload', () => {
     const window = MainWindow.getWindow();
@@ -166,7 +200,14 @@ ipcMain.on('panel-changed', (event, data) => {
 
 app.on('window-all-closed', () => app.quit());
 
- 
+let closeBehavior = 'close-launcher'; // default behavior
+
+ipcMain.on('update-close-behavior', (event, value) => {
+    if (typeof value === 'string') {
+        closeBehavior = value;
+        console.log('Close behavior updated to:', closeBehavior);
+    }
+});
 
 autoUpdater.autoDownload = false;
 

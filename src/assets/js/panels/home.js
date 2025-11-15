@@ -20,6 +20,13 @@ class Home {
 	audioPlaying = false;
 	currentMusic = null;
 
+	// dev console helpers
+	devConsoleElement = null;
+	devConsoleVisible = false;
+	originalConsole = null;
+	logBuffer = [];
+	maxLogs = 5000;
+
 	static id = "home";
 
     async init(config) {
@@ -36,6 +43,24 @@ class Home {
             // setup volume UI and sync with stored config (if present)
 			try { await this.setupVolumeControl(); } catch (err) { console.warn('Failed to setup volume control:', err); }
 		} catch (err) { console.warn('Failed to create audio controls:', err); }
+
+		// create and wire custom dev console and block devtools open
+		try {
+			await this.createDevConsole();
+			this.overrideConsole();
+			window.addEventListener('keydown', this.handleDevKeys.bind(this), true);
+			// block right click (optional)
+			window.addEventListener('contextmenu', (e) => { e.preventDefault(); }, true);
+			// capture uncaught errors/promises
+			window.addEventListener('error', (ev) => {
+				this.appendLog('error', ev.message || 'window.error', ev.filename + ':' + ev.lineno + ':' + ev.colno);
+			});
+			window.addEventListener('unhandledrejection', (ev) => {
+				this.appendLog('error', 'unhandledrejection', ev.reason);
+			});
+		} catch (e) {
+			console.warn('Dev console init failed:', e);
+		}
     }
 
     async filterAuthorizedInstances(instancesList, authName) {
@@ -696,49 +721,85 @@ class Home {
                 instancesListPopup.innerHTML = '';
                 
                 for (let instance of instancesList) {
-                    // Normalizar bg para banner (evitar insertar arrays crudos en HTML)
-					const rawBg = instance.backgroundUrl || instance.background || '';
-					const videoRegex = /\.(mp4|webm|ogg)(\?.*)?$/i;
-					let bgForBanner = '';
-					if (Array.isArray(rawBg)) {
-						const images = rawBg.filter(x => typeof x === 'string' && !videoRegex.test(x));
-						bgForBanner = images.length ? images[0] : (typeof rawBg[0] === 'string' ? rawBg[0] : '');
-					} else {
-						bgForBanner = typeof rawBg === 'string' ? rawBg : '';
-					}
+                    // Prefer avatar/icon as banner (evitar usar vídeo como thumbnail)
+                    const rawAvatar = instance.avatarUrl || instance.avatar || instance.iconUrl || instance.icon || instance.backgroundUrl || instance.background || '';
+                    const videoRegex = /\.(mp4|webm|ogg)(\?.*)?$/i;
+                    let avatarForBanner = '';
+                    if (Array.isArray(rawAvatar)) {
+                        const images = rawAvatar.filter(x => typeof x === 'string' && !videoRegex.test(x));
+                        avatarForBanner = images.length ? images[0] : (typeof rawAvatar[0] === 'string' ? rawAvatar[0] : '');
+                    } else {
+                        avatarForBanner = typeof rawAvatar === 'string' ? rawAvatar : '';
+                    }
 
-                    const bannerStyle = bgForBanner ? `style="background-image: url('${bgForBanner}');"` : '';
+                    // loader info
+                    const loader = instance.loadder || instance.loaders || {};
+                    const loaderType = (loader.loadder_type || loader.loader_type || '') ;
+                    const mcVersion = (loader.minecraft_version || loader.minecraftVersion || '');
+
+                    const bannerStyle = avatarForBanner ? `style="background-image: url('${avatarForBanner}');"` : '';
+
                     instancesListPopup.innerHTML += `
-                        <div id="${instance.name}" class="instance-card${instance.name === instanceSelect ? ' active-instance' : ''}" data-bg="${bgForBanner}">
+                        <div id="${instance.name}" class="instance-card${instance.name === instanceSelect ? ' active-instance' : ''}" data-loader-type="${loaderType}" data-mc-version="${mcVersion}">
                             <div class="instance-banner" ${bannerStyle}>
                                 <div class="instance-banner-overlay">
                                     <div class="instance-name">${instance.name}</div>
                                 </div>
                             </div>
+                            <div class="instance-hover-info" style="display:none;"></div>
                         </div>`;
                 }
             }
 
+            // hover behavior: show info panel inside the card (NO background change)
             const onHover = e => {
                 const el = e.target.closest('.instance-card');
                 if (!el) return;
-                const hoverBg = el.dataset.bg;
-                if (hoverBg) this.setBackground(hoverBg);
-            };
 
-            const onLeave = e => {
-                const related = e.relatedTarget;
-                if (!instancesListPopup.contains(related)) {
-                    this.setBackground(previousBackground || null);
+                // show loader/version info inside card hover box
+                const loaderType = el.getAttribute('data-loader-type') || '';
+                const mcVer = el.getAttribute('data-mc-version') || '';
+                let content = `<div class="hover-title">${el.id}</div>`;
+                if (loaderType) content += `<div class="hover-line"><strong>Loader:</strong> ${loaderType}</div>`;
+                if (mcVer) content += `<div class="hover-line"><strong>Version:</strong> ${mcVer}</div>`;
+
+                const hoverInfo = el.querySelector('.instance-hover-info');
+                if (hoverInfo) {
+                    hoverInfo.innerHTML = content;
+                    hoverInfo.style.display = 'block';
                 }
             };
 
+            const onLeave = e => {
+                const el = e.target.closest('.instance-card');
+                if (!el) {
+                    // hide any hover-info if leaving the container area
+                    const all = instancesListPopup.querySelectorAll('.instance-hover-info');
+                    all.forEach(h => h.style.display = 'none');
+                    return;
+                }
+                const hoverInfo = el.querySelector('.instance-hover-info');
+                if (hoverInfo) hoverInfo.style.display = 'none';
+            };
+
+            // ensure we don't re-add duplicates
             instancesListPopup.removeEventListener('mouseover', onHover);
             instancesListPopup.removeEventListener('mouseout', onLeave);
             instancesListPopup.addEventListener('mouseover', onHover);
             instancesListPopup.addEventListener('mouseout', onLeave);
 
+            // display modal
             instancePopup.style.display = 'flex';
+        });
+
+        // prevent selecting instance via click in popup (no selection action)
+        instancePopup.addEventListener('click', async e => {
+            const instanceEl = e.target.closest('.instance-card');
+            if (instanceEl) {
+                // intentionally ignore click selection; only hover shows info
+                return;
+            }
+            // allow clicks on other controls (e.g., unlock code) to work normally
         });
 
         instancePopup.addEventListener('click', async e => {
@@ -1135,6 +1196,214 @@ class Home {
         let allMonth = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
         return { year, month: allMonth[month - 1], day };
     }
+
+	// Create DOM for developer console overlay (icons, small id, copy-id)
+	async createDevConsole() {
+		if (this.devConsoleElement) return;
+		const container = document.createElement('div');
+		container.className = 'dev-console';
+		container.innerHTML = `
+			<div class="dev-console-header">
+				<div class="dev-console-title">Lad Client - Consola</div>
+				<div class="dev-console-actions">
+					<button class="dev-clear" title="Limpiar">🗑️</button>
+					<button class="dev-copy" title="Copiar">📋</button>
+					<button class="dev-download" title="Descargar">⬇️</button>
+					<button class="dev-close" title="Cerrar">✕</button>
+				</div>
+			</div>
+			<div class="dev-console-body" role="log"></div>
+			<div class="dev-console-footer">
+				<span class="dev-console-id">Cuenta: <span class="dev-id">-</span></span>
+				<button class="dev-copy-id" title="Copiar ID">🔖</button>
+			</div>
+		`;
+		document.body.appendChild(container);
+		this.devConsoleElement = container;
+
+		// wire buttons
+		container.querySelector('.dev-clear').addEventListener('click', () => this.clearLogs());
+		container.querySelector('.dev-copy').addEventListener('click', () => {
+			const text = this.logBuffer.map(l => `[${l.ts}] ${l.level.toUpperCase()} ${l.msg}`).join('\n');
+			navigator.clipboard?.writeText(text).catch(()=>{});
+		});
+		container.querySelector('.dev-download').addEventListener('click', () => this.downloadLogs());
+		container.querySelector('.dev-close').addEventListener('click', () => this.toggleDevConsole(false));
+		container.querySelector('.dev-copy-id').addEventListener('click', async () => {
+			const idEl = container.querySelector('.dev-id');
+			if (idEl && idEl.textContent && idEl.textContent !== '-') {
+				navigator.clipboard?.writeText(idEl.textContent).catch(()=>{});
+			}
+		});
+
+		// set id (from selected account). keep updated periodically
+		const setIdFromDB = async () => {
+			try {
+				const cfg = await this.db.readData('configClient') || {};
+				const accId = cfg.account_selected;
+				let accName = '-';
+				if (accId) {
+					const acc = await this.db.readData('accounts', accId);
+					if (acc) accName = acc.name || acc.ID || String(accId);
+				}
+				const el = container.querySelector('.dev-id');
+				if (el) el.textContent = accName;
+			} catch (e) { /* ignore */ }
+		};
+		await setIdFromDB();
+		// also refresh id every 5s to reflect changes
+		setInterval(setIdFromDB, 5000);
+
+		// hide by default and smaller by CSS
+		container.style.display = 'none';
+	}
+
+	// Toggle dev console visible state
+	toggleDevConsole(force) {
+		const el = this.devConsoleElement;
+		if (!el) return;
+		if (typeof force === 'boolean') this.devConsoleVisible = force;
+		else this.devConsoleVisible = !this.devConsoleVisible;
+		el.style.display = this.devConsoleVisible ? 'flex' : 'none';
+		if (this.devConsoleVisible) {
+			const body = el.querySelector('.dev-console-body');
+			if (body) body.scrollTop = body.scrollHeight;
+		}
+	}
+
+	// helper: decide si un mensaje pertenece al launcher (evitar web/privado)
+	isLauncherMessage(level, msg) {
+		try {
+			// aceptar siempre errores/warings que incluyan keywords locales
+			const text = ('' + msg).toLowerCase();
+			const launcherKeywords = [
+				'lad-client', 'lad client', 'launcher', 'minecraft', 'configclient',
+				'unlockedinstances', 'setmusic', 'setbackground', 'startgame',
+				'renderSidebarAvatars'.toLowerCase(), 'instancesselect'.toLowerCase(),
+				'db.readdata', 'db.updatedata', 'ipcRenderer'.toLowerCase(), 'appdata',
+				'minecraft-java-core', 'launch', 'load', 'verify'
+			];
+			const projectPaths = ['src/', 'assets/', this.config?.dataDirectory?.toLowerCase() || '.']; // include dataDirectory if available
+
+			// reject obvious web/network messages
+			const webReject = ['http://', 'https://', 'chrome', 'cdn', 'fetch', 'xhr', 'serviceworker', 'websocket', 'ws://', 'wss://'];
+			for (const r of webReject) if (text.includes(r)) return false;
+
+			// if contains launcher keyword or project path => allow
+			for (const k of launcherKeywords) if (text.includes(k)) return true;
+			for (const p of projectPaths) if (p && text.includes(p)) return true;
+
+			// allow unhandled errors and warnings even if no keyword (to detect crashes)
+			if (level === 'error' || level === 'warn') return true;
+
+			return false;
+		} catch (e) { return false; }
+	}
+
+	// Append formatted log into console DOM and buffer (only launcher-related)
+	appendLog(level, ...args) {
+		try {
+			// build message string
+			let msg;
+			try {
+				msg = args.map(a => {
+					if (typeof a === 'string') return a;
+					try { return (typeof a === 'object') ? JSON.stringify(a) : String(a); } catch (e) { return String(a); }
+				}).join(' ');
+			} catch (e) { msg = args.join(' '); }
+
+			// filter: only launcher-related
+			if (!this.isLauncherMessage(level, msg)) return;
+
+			const ts = new Date().toLocaleString();
+
+			// store buffer
+			this.logBuffer.push({ ts, level, msg });
+			if (this.logBuffer.length > this.maxLogs) this.logBuffer.shift();
+
+			// append to DOM
+			if (this.devConsoleElement) {
+				const body = this.devConsoleElement.querySelector('.dev-console-body');
+				if (body) {
+					const row = document.createElement('div');
+					row.className = `dev-log dev-log-${level}`;
+					row.textContent = `[${ts}] ${level.toUpperCase()} ${msg}`;
+					body.appendChild(row);
+					// limit children count
+					while (body.children.length > this.maxLogs) body.removeChild(body.firstChild);
+					body.scrollTop = body.scrollHeight;
+				}
+			}
+		} catch (e) { /* noop */ }
+	}
+
+	// Override console methods to capture everything
+	overrideConsole() {
+		if (this.originalConsole) return;
+		this.originalConsole = {
+			log: console.log.bind(console),
+			info: console.info.bind(console),
+			warn: console.warn.bind(console),
+			error: console.error.bind(console),
+			debug: console.debug ? console.debug.bind(console) : console.log.bind(console)
+		};
+		const levels = ['log','info','warn','error','debug'];
+		for (const lvl of levels) {
+			console[lvl] = (...args) => {
+				try { this.appendLog(lvl, ...args); } catch (e) {}
+				try { this.originalConsole[lvl](...args); } catch (e) {}
+			};
+		}
+		// also capture console.trace
+		const origTrace = console.trace?.bind(console);
+		console.trace = (...args) => {
+			this.appendLog('debug', 'TRACE', ...args);
+			origTrace && origTrace(...args);
+		};
+	}
+
+	// clear logs UI + buffer
+	clearLogs() {
+		this.logBuffer = [];
+		if (this.devConsoleElement) {
+			const body = this.devConsoleElement.querySelector('.dev-console-body');
+			if (body) body.innerHTML = '';
+		}
+	}
+
+	// download logs as txt
+	downloadLogs() {
+		const text = this.logBuffer.map(l => `[${l.ts}] ${l.level.toUpperCase()} ${l.msg}`).join('\n');
+		const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = `launcher-console-${Date.now()}.log.txt`;
+		document.body.appendChild(a);
+		a.click();
+		a.remove();
+		URL.revokeObjectURL(url);
+	}
+
+	// capture keyboard combinations and block devtools open; open custom console on F12
+	handleDevKeys(e) {
+		// block common devtools combos
+		const blocked =
+			e.key === 'F12' ||
+			(e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+			(e.ctrlKey && e.key === 'I');
+
+		if (blocked) {
+			e.preventDefault();
+			e.stopPropagation();
+			// toggle custom console on F12 (or other combos)
+			if (e.key === 'F12' || e.key === 'i' || e.key === 'I') {
+				this.toggleDevConsole();
+			}
+			return false;
+		}
+		return true;
+	}
 }
 
 export default Home;

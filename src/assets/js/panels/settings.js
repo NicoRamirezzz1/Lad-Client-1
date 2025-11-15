@@ -266,6 +266,7 @@ class Settings {
         let closeBox = document.querySelector(".close-box");
         let closeLauncher = configClient?.launcher_config?.closeLauncher || "close-launcher";
 
+        // reflect current choice in UI
         if (closeLauncher == "close-launcher") {
             document.querySelector('.close-launcher').classList.add('active-close');
         } else if (closeLauncher == "close-all") {
@@ -273,6 +274,11 @@ class Settings {
         } else if (closeLauncher == "close-none") {
             document.querySelector('.close-none').classList.add('active-close');
         }
+
+        // NEW: inform main process about the current stored behavior immediately
+        try {
+            ipcRenderer.send('update-close-behavior', closeLauncher);
+        } catch (e) { console.warn('Failed to send close behavior to main:', e); }
 
         closeBox.addEventListener("click", async e => {
             if (e.target.classList.contains('close-btn')) {
@@ -286,14 +292,20 @@ class Settings {
                     e.target.classList.toggle('active-close');
                     configClient.launcher_config.closeLauncher = "close-launcher";
                     await this.db.updateData('configClient', configClient);
+                    // NEW: notify main process of change
+                    ipcRenderer.send('update-close-behavior', 'close-launcher');
                 } else if (e.target.classList.contains('close-all')) {
                     e.target.classList.toggle('active-close');
                     configClient.launcher_config.closeLauncher = "close-all";
                     await this.db.updateData('configClient', configClient);
+                    // NEW: notify main process of change
+                    ipcRenderer.send('update-close-behavior', 'close-all');
                 } else if (e.target.classList.contains('close-none')) {
                     e.target.classList.toggle('active-close');
                     configClient.launcher_config.closeLauncher = "close-none";
                     await this.db.updateData('configClient', configClient);
+                    // NEW: notify main process of change
+                    ipcRenderer.send('update-close-behavior', 'close-none');
                 }
             }
         })

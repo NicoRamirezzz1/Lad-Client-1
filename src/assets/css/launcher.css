@@ -4,6 +4,15 @@
 @import 'panels/home.css';
 @import 'panels/settings.css';
 
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    /* Evita la aparición de la barra de scroll global al iniciar el launcher */
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -30,6 +39,8 @@ input::-webkit-inner-spin-button {
 
 .content-scroll {
     overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: 100%;
 }
 
 .content-scroll::-webkit-scrollbar {
@@ -137,7 +148,8 @@ input::-webkit-inner-spin-button {
 }
 
 .popup {
-    position: absolute;
+    /* Cambiado de absolute a fixed para que el popup no provoque scroll del body */
+    position: fixed;
     width: 100%;
     height: 100%;
     z-index: 10;
@@ -221,6 +233,8 @@ input::-webkit-inner-spin-button {
     position: absolute;
     width: 100%;
     height: 100%;
+    max-height: 100vh; /* evita que el panel empuje la página */
+    overflow: hidden;  /* el contenido con scroll debe usar .content-scroll */
     opacity: 0;
     z-index: 0;
     pointer-events: none;

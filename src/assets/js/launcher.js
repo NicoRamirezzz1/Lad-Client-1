@@ -24,6 +24,17 @@ class Launcher {
         if (await this.config.error) return this.errorConnect()
         this.db = new database();
         await this.initConfigClient();
+
+        // NEW: send stored close behavior to main process so main knows how to act
+        try {
+            const cfgClient = await this.db.readData('configClient') || {};
+            const closeBehavior = cfgClient.launcher_config?.closeLauncher || 'close-launcher';
+            ipcRenderer.send('update-close-behavior', closeBehavior);
+            console.log('Sent initial close behavior to main:', closeBehavior);
+        } catch (e) {
+            console.warn('Failed to send initial close behavior to main:', e);
+        }
+
         this.createPanels(Login, Home, Settings);
         this.startLauncher();
     }
