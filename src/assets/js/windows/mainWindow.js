@@ -17,13 +17,32 @@ function getWindow() {
 function destroyWindow() {
     if (!mainWindow) return;
     console.log('destroyWindow called');
-    mainWindow.close();
-    mainWindow = undefined;
-    app.quit();
+    try {
+        // remove listeners to avoid lingering handles
+        mainWindow.removeAllListeners();
+        // destroy forcing immediate cleanup
+        mainWindow.destroy();
+    } catch (err) {
+        console.warn('Error destroying mainWindow:', err);
+        try { mainWindow.close(); } catch(e){}
+    } finally {
+        mainWindow = undefined;
+        try { app.quit(); } catch(e) {}
+    }
 }
 
 function createWindow() {
-    if (mainWindow) return;
+    // if window already exists, restore/show it so it can be reopened after being hidden/minimized
+    if (mainWindow) {
+        try {
+            if (typeof mainWindow.isMinimized === 'function' && mainWindow.isMinimized()) mainWindow.restore();
+            if (typeof mainWindow.isVisible === 'function' && !mainWindow.isVisible()) mainWindow.show();
+            else mainWindow.show();
+        } catch (e) {
+            console.warn('Failed to restore/show existing mainWindow:', e);
+        }
+        return;
+    }
     
     mainWindow = new BrowserWindow({
         title: pkg.preductname,
