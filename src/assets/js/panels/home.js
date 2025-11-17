@@ -657,8 +657,10 @@ class Home {
 
                         try { this.setBackground(bg || null); } catch (e) { }
                         try { setStatus(instance.status); } catch (e) { }
-						try { this.setMusic(instance.music || instance.musicUrl || null); } catch (e) { }
-						try { this.updateServerTitle(instance.name); } catch (e) { }
+                        try { this.setMusic(instance.music || instance.musicUrl || null); } catch (e) { }
+                        try { this.updateServerTitle(instance.name); } catch (e) { }
+                        // NEW: update ads for selected instance (use adsClickUrl from webhost)
+                        try { this.setAds(instance.adsUrl || instance.ads || null, instance.adsClickUrl || instance.adsUrl || null); } catch (e) { console.warn('setAds error', e); }
                     } catch (err) { console.warn('Error al seleccionar instancia desde sidebar:', err); }
                 });
 
@@ -707,6 +709,8 @@ class Home {
                 // load music for initial selection (do not auto-play unless user toggled)
                 try { this.setMusic(currentOption.music || currentOption.musicUrl || null); } catch (e) {}
                 try { this.updateServerTitle(currentOption.name); } catch (e) {}
+                // NEW: set ads for the initially selected instance (use adsClickUrl)
+                try { this.setAds(currentOption.adsUrl || currentOption.ads || null, currentOption.adsClickUrl || currentOption.adsUrl || null); } catch (e) {}
             }
         } catch (e) { console.warn('Error aplicando fondo inicial:', e); }
 
@@ -822,8 +826,10 @@ class Home {
 
                 await setStatus(instance.status);
                 try { this.setBackground(instance.backgroundUrl || instance.background || null); } catch (e) { }
-				try { this.setMusic(instance.music || instance.musicUrl || null); } catch (e) {}
-				try { this.updateServerTitle(instance.name); } catch (e) {}
+                try { this.setMusic(instance.music || instance.musicUrl || null); } catch (e) {}
+                try { this.updateServerTitle(instance.name); } catch (e) { }
+                // NEW: update ads when selecting from popup (use adsClickUrl)
+                try { this.setAds(instance.adsUrl || instance.ads || null, instance.adsClickUrl || instance.adsUrl || null); } catch (e) {}
                 instancePopup.style.display = 'none';
             }
         });
@@ -1404,6 +1410,72 @@ class Home {
 		}
 		return true;
 	}
+
+    // NEW: load and control ads panel
+    async setAds(adsUrl, adsClickUrl) {
+        try {
+            const panel = document.querySelector('.ads-panel');
+            const video = panel ? panel.querySelector('.ads-video') : null;
+            const infoBtn = panel ? panel.querySelector('.ads-info') : null;
+
+            if (!panel || !video || !infoBtn) return;
+
+            if (!adsUrl) {
+                panel.classList.add('hidden');
+                // stop any playing video
+                try { video.pause(); video.removeAttribute('src'); video.load(); } catch (e) {}
+                infoBtn.dataset.link = '';
+                return;
+            }
+
+            panel.classList.remove('hidden');
+            const link = adsClickUrl || adsUrl;
+            infoBtn.dataset.link = link;
+
+            // set video src and try autoplay muted
+            if (video.src !== adsUrl) {
+                try {
+                    video.pause();
+                } catch (e) {}
+                video.src = adsUrl;
+                try { await video.load(); } catch (e) {}
+            }
+
+            // try to play muted to allow autoplay in many envs
+            try {
+                video.muted = true;
+                const playPromise = video.play();
+                if (playPromise && typeof playPromise.then === 'function') {
+                    playPromise.catch(()=>{ /* autoplay blocked */ });
+                }
+            } catch (e) { /* ignore */ }
+
+            // click handlers: open external link
+            const openAdLink = async () => {
+                try {
+                    if (!link) return;
+                    await shell.openExternal(link);
+                } catch (e) { console.warn('Failed to open ad link', e); }
+            };
+
+            // remove previous listeners to avoid duplicates
+            infoBtn.onclick = null;
+            video.onclick = null;
+
+            infoBtn.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                openAdLink();
+            });
+
+            video.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                openAdLink();
+            });
+
+        } catch (e) {
+            console.warn('setAds error', e);
+        }
+    }
 }
 
 export default Home;

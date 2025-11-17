@@ -67,7 +67,21 @@ else app.whenReady().then(() => {
     UpdateWindow.createWindow()
 });
 
-ipcMain.on('main-window-open', () => MainWindow.createWindow())
+// reemplazar handler simple por uno que reutilice/muestre la ventana si ya existe
+ipcMain.on('main-window-open', () => {
+    const window = MainWindow.getWindow();
+    if (window) {
+        try {
+            if (window.isMinimized && window.isMinimized()) window.restore();
+            window.show();
+            window.focus();
+            return;
+        } catch (e) {
+            console.warn('Failed to restore existing main window, creating new one:', e);
+        }
+    }
+    MainWindow.createWindow();
+})
 ipcMain.on('main-window-dev-tools', () => {
     const window = MainWindow.getWindow();
     if (window) window.webContents.openDevTools({ mode: 'detach' })
@@ -80,39 +94,32 @@ ipcMain.on('main-window-close', () => {
     console.log('main-window-close requested, behavior=', closeBehavior);
     const window = MainWindow.getWindow();
 
-    if (closeBehavior === 'close-all') {
-        // close everything (existing behavior)
+    // Always attempt a robust destroy of the main window to avoid leftover renderer processes
+    try {
+        // If a window exists, destroy it
+        if (window) {
+            try { window.removeAllListeners && window.removeAllListeners(); } catch(e){}
+        }
         MainWindow.destroyWindow();
-        return;
+    } catch (e) {
+        console.warn('Error while destroying main window:', e);
     }
 
-    if (!window) return;
-
-    if (closeBehavior === 'close-launcher') {
-        // hide the main window so the app stays running in background
+    // Give Electron a short moment to exit cleanly, otherwise force exit
+    setTimeout(() => {
         try {
-            window.hide();
-            console.log('Main window hidden (close-launcher)');
-        } catch (e) {
-            console.warn('Failed to hide window, falling back to close:', e);
-            MainWindow.destroyWindow();
+            // Try a graceful quit first
+            app.quit();
+        } catch (err) {
+            console.warn('app.quit() failed, forcing exit:', err);
+            try { app.exit(0); } catch(e) { process.exit(0); }
         }
-        return;
-    }
 
-    if (closeBehavior === 'close-none') {
-        // do not close: minimize to taskbar/tray as a friendly fallback
-        try {
-            window.minimize();
-            console.log('Main window minimized (close-none)');
-        } catch (e) {
-            console.warn('Failed to minimize window, ignoring close:', e);
-        }
-        return;
-    }
-
-    // fallback: destroy
-    MainWindow.destroyWindow();
+        // Safety fallback: if still not exited after a short delay, force process exit
+        setTimeout(() => {
+            try { process.exit(0); } catch (e) { /* noop */ }
+        }, 800);
+    }, 200);
 })
 ipcMain.on('main-window-reload', () => {
     const window = MainWindow.getWindow();

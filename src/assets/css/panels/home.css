@@ -182,6 +182,7 @@
     padding: 1.2rem 0.8rem;
     overflow-y: auto;
     flex: 1;
+    align-items: stretch; /* asegurar que los hijos se extiendan al 100% de ancho */
 }
 
 .instance-avatars::-webkit-scrollbar {
@@ -193,7 +194,7 @@
 }
 
 .instance-avatars::-webkit-scrollbar-thumb {
-    background: rgba(128, 128, 128, 0.3);
+    background: rgba(128, 128, 128, 0.3) !important;
     border-radius: 3px;
 }
 
@@ -203,7 +204,8 @@
 
 /* Individual Instance Avatar */
 .instance-avatar {
-    width: 100%;
+    width: 100%; /* siempre full width dentro del contenedor */
+    min-width: 0;
     aspect-ratio: 1;
     border-radius: 12px;
     overflow: hidden;
@@ -214,41 +216,32 @@
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
     cursor: pointer;
     display: block;
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.28s, filter 0.28s;
     position: relative;
     image-rendering: pixelated;
+    flex-shrink: 0;
 }
 
-.instance-avatar:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
-    border-color: rgba(128, 128, 128, 0.3);
-}
-
+/* No cambiar layout (width/margin) al activarse: usar transform/scale sólo */
 .instance-avatar.active {
-	/* nuevo: más pequeño en apariencia, centrado y con estilo distinto */
-	width: 86%;
-	margin: 0 auto;
-	transform: translateY(-6px) scale(0.92);
-	border-radius: 10px;
-	/* borde sutil transparente para permitir glow externo */
-	border: 1px solid rgba(255,255,255,0.06);
-	/* sombra externa reducida y un brillo interno para distinto look */
-	box-shadow:
-		0 6px 18px rgba(0,0,0,0.55),
-		inset 0 6px 18px rgba(255,255,255,0.02);
-	/* ligero aumento de contraste/saturación */
-	filter: saturate(1.06) brightness(1.02);
-	/* mantener transición suave */
-	transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.28s, filter 0.28s;
+    /* mantener tamaño en flujo, solo aplicar efecto visual */
+    width: 100%;
+    margin: 0;
+    transform: translateY(-6px) scale(1.03);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow:
+        0 10px 26px rgba(0,0,0,0.55),
+        inset 0 6px 18px rgba(255,255,255,0.02);
+    filter: saturate(1.06) brightness(1.02);
 }
 
-/* si estaba el estilo hover, mantener interacción coherente */
+/* ajustar hover manteniendo el mismo flujo */
 .instance-avatar.active:hover {
-	transform: translateY(-8px) scale(0.94);
-	box-shadow:
-		0 10px 28px rgba(0,0,0,0.6),
-		inset 0 8px 22px rgba(255,255,255,0.03);
+    transform: translateY(-8px) scale(1.04);
+    box-shadow:
+        0 12px 30px rgba(0,0,0,0.6),
+        inset 0 8px 22px rgba(255,255,255,0.03);
 }
 
 .instance-avatar.locked {
@@ -961,6 +954,9 @@
     .instances-List {
         grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     }
+    
+    .paypal-badge-container { left: 16px; bottom: 78px; }
+    .paypal-badge { width: 120px; }
 }
 
 @media (max-width: 900px) {
@@ -1122,6 +1118,9 @@
     .progress-bar {
         width: 200px;
     }
+    
+    .paypal-badge-container { left: 10px; bottom: 100px; }
+    .paypal-badge { width: 82px; }
 }
 
 /* ==================== GAME STARTING NOTIFICATION ==================== */
@@ -1430,4 +1429,231 @@
         font-size: 0.78rem;
         bottom: 8px;
     }
+}
+
+/* PayPal: animación mejorada (bouncing + tilt + glow) */
+@keyframes paypal-bounce {
+    0%   { transform: translateY(0) rotate(0deg) scale(1); filter: drop-shadow(0 12px 32px rgba(0,0,0,0.55)); }
+    30%  { transform: translateY(-8px) rotate(-1.2deg) scale(1.04); filter: drop-shadow(0 20px 44px rgba(0,0,0,0.6)); }
+    60%  { transform: translateY(-4px) rotate(0.8deg) scale(1.02); filter: drop-shadow(0 16px 36px rgba(0,0,0,0.58)); }
+    100% { transform: translateY(0) rotate(0deg) scale(1); filter: drop-shadow(0 12px 32px rgba(0,0,0,0.55)); }
+}
+
+.paypal-badge-link {
+    position: fixed;
+    left: calc(160px + 38px); /* ligeramente menos a la derecha */
+    bottom: 140px;            /* un poco más arriba/compacto */
+    z-index: 95;
+    pointer-events: auto;
+    display: inline-block;
+    transition: transform 220ms cubic-bezier(.2,.9,.2,1), box-shadow 220ms ease, opacity 180ms ease;
+    max-width: 40%;
+    text-decoration: none;
+    outline: none;
+    will-change: transform, filter;
+}
+
+.paypal-badge {
+    width: 220px; /* reducido */
+    border-radius: 10px;
+    display: block;
+    cursor: pointer;
+    transform-origin: left bottom;
+    transition: transform 220ms cubic-bezier(.2,.9,.2,1), filter 220ms ease;
+}
+
+/* hover: seguir con animación pero en escala menor */
+.paypal-badge-link:hover .paypal-badge,
+.paypal-badge-link:focus .paypal-badge {
+    animation: paypal-bounce 640ms both;
+    transform: translateY(-5px) rotate(-0.6deg) scale(1.04);
+    filter: drop-shadow(0 18px 44px rgba(0,123,255,0.16)) saturate(1.03);
+}
+
+/* Ajustes responsive para PayPal más pequeño */
+@media (max-width: 1400px) {
+    .paypal-badge { width: 190px; }
+    .paypal-badge-link { bottom: 115px; left: calc(140px + 24px); }
+}
+@media (max-width: 900px) {
+    .paypal-badge { width: 140px; }
+    .paypal-badge-link { left: calc(120px + 12px); bottom: 130px; }
+}
+@media (max-width: 480px) {
+    .paypal-badge { width: 100px; }
+    .paypal-badge-link { left: 10px; bottom: 150px; }
+}
+
+/* ========================= ADS PANEL ========================= */
+.ads-panel {
+    position: fixed;
+    right: 28px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 300px;
+    max-width: calc(40vw);
+    background: linear-gradient(180deg, rgba(18,18,18,0.92), rgba(10,10,10,0.9));
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 12px;
+    z-index: 92;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow: hidden;
+    cursor: default;
+    backdrop-filter: blur(6px) saturate(1.05);
+}
+
+.ads-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0 4px;
+}
+
+.ads-title {
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.9);
+    letter-spacing: 0.6px;
+}
+
+.ads-info {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.85);
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 160ms ease, transform 120ms ease;
+}
+.ads-info:hover { background: rgba(255,255,255,0.03); transform: translateY(-2px); }
+
+.ads-video-wrap {
+    position: relative;
+    width: 100%;
+    padding-top: 56%; /* 16:9 ratio */
+    border-radius: 8px;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(0,0,0,0.3), rgba(0,0,0,0.5));
+    border: 1px solid rgba(255,255,255,0.02);
+}
+
+.ads-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    cursor: pointer;
+    filter: saturate(0.98) contrast(0.98);
+}
+
+/* small overlay label bottom-right */
+.ads-overlay {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.8);
+    background: rgba(0,0,0,0.35);
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.03);
+}
+
+/* hide panel when empty (js toggles an 'empty' class) */
+.ads-panel.hidden { display: none !important; }
+
+/* responsive adjustments */
+@media (max-width: 1200px) {
+    .ads-panel { width: 360px; right: 18px; }
+    .paypal-badge { width: 240px; }
+}
+@media (max-width: 900px) {
+    .ads-panel { width: 260px; right: 12px; top: 60%; }
+    .paypal-badge { width: 170px; left: 18px; bottom: 140px; }
+}
+@media (max-width: 480px) {
+    .ads-panel { display: none; } /* esconder en pantallas muy pequeñas */
+}
+
+/* asegurar que los avatars llenen el ancho y no provoquen reflow al activarse */
+.instance-avatars {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 1.2rem 0.8rem;
+    overflow-y: auto;
+    flex: 1;
+    align-items: stretch; /* asegurar que los hijos se extiendan al 100% de ancho */
+}
+
+/* forzar ancho consistente en cada avatar para evitar diferencias visuales */
+.instance-avatar {
+    width: 100%; /* siempre full width dentro del contenedor */
+    min-width: 0;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: var(--background-element);
+    background-position: center;
+    background-size: cover;
+    border: 2px solid rgba(128, 128, 128, 0.15);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    display: block;
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.28s, filter 0.28s;
+    position: relative;
+    image-rendering: pixelated;
+    flex-shrink: 0;
+}
+
+/* No cambiar layout (width/margin) al activarse: usar transform/scale sólo */
+.instance-avatar.active {
+    /* mantener tamaño en flujo, solo aplicar efecto visual */
+    width: 100%;
+    margin: 0;
+    transform: translateY(-6px) scale(1.03);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow:
+        0 10px 26px rgba(0,0,0,0.55),
+        inset 0 6px 18px rgba(255,255,255,0.02);
+    filter: saturate(1.06) brightness(1.02);
+}
+
+/* ajustar hover manteniendo el mismo flujo */
+.instance-avatar.active:hover {
+    transform: translateY(-8px) scale(1.04);
+    box-shadow:
+        0 12px 30px rgba(0,0,0,0.6),
+        inset 0 8px 22px rgba(255,255,255,0.03);
+}
+
+/* Forzar color neutral en scrollbar para que no salga barra morada */
+.instance-avatars::-webkit-scrollbar-thumb {
+    background: rgba(128, 128, 128, 0.3) !important;
+    border-radius: 3px;
+}
+
+/* Evitar outlines / focus visuales dentro de la sidebar (quita "cosito morado") */
+.instances-sidebar *:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* como medida adicional, ocultar cualquier pseudo-elemento inesperado dentro de la sidebar */
+.instances-sidebar::after,
+.instances-sidebar::before {
+    display: none !important;
 }
