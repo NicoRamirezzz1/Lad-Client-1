@@ -34,7 +34,7 @@ async function setActivity(instanceName = currentInstance, panelName = currentPa
     rpc.setActivity({
         startTimestamp: new Date(),
         largeImageKey: 'launcher_logo',
-        largeImageText: 'Bridge Client',
+        largeImageText: 'Lad Client',
         smallImageKey: 'icon',
         smallImageText: 'Preparándome para jugar',
         details: details,

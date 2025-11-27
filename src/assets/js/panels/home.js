@@ -7,6 +7,34 @@ import { config, database, logger, changePanel, appdata, setStatus, pkg, popup }
 const { Launch } = require('minecraft-java-core')
 const { shell, ipcRenderer } = require('electron')
 
+// ADDED: safe node requires to avoid throws in environments where require is disabled
+let fs = null;
+let path = null;
+try {
+	// prefer global require if available (renderer may expose it)
+	if (typeof require !== 'undefined') {
+		fs = require('fs');
+		path = require('path');
+	} else if (window && window.require) {
+		fs = window.require('fs');
+		path = window.require('path');
+	}
+} catch (err) {
+	console.warn('home.js: node fs/path not available in this context', err);
+}
+const fsAvailable = !!fs && !!path;
+const pathAvailable = !!path;
+
+// helper: safe join fallback (simple concat) if path not available
+function joinSafe(...parts) {
+	try {
+		if (pathAvailable) return path.join(...parts);
+		return parts.filter(p=>typeof p==='string' && p.length).join('/');
+	} catch (e) {
+		return parts.filter(p=>typeof p==='string' && p.length).join('/');
+	}
+}
+
 class Home {
 	// new helpers/properties to manage background elements/timers
 	bgTimer = null;
@@ -713,6 +741,73 @@ class Home {
                         // NEW: update ads for selected instance (use adsClickUrl from webhost)
                         try { this.setAds(instance.adsUrl || instance.ads || null, instance.adsClickUrl || instance.adsUrl || null); } catch (e) { console.warn('setAds error', e); }
                     } catch (err) { console.warn('Error al seleccionar instancia desde sidebar:', err); }
+                });
+
+                // NEW: right-click context menu to open Files Management
+                el.addEventListener('contextmenu', async (ev) => {
+                    try {
+                        ev.preventDefault();
+                        ev.stopPropagation();
+                        // ensure any existing menu is removed
+                        this.clearInstanceContextMenu();
+                        const menu = document.createElement('div');
+                        menu.className = 'instance-context-menu';
+                        Object.assign(menu.style, {
+                            position: 'fixed',
+                            left: `${ev.clientX}px`,
+                            top: `${ev.clientY}px`,
+                            zIndex: 999999,
+                            background: 'rgba(18,18,18,0.85)',
+                            border: '1px solid rgba(255,255,255,0.06)',
+                            padding: '6px',
+                            borderRadius: '8px',
+                            /* REMOVED backdropFilter to avoid unintended global blur/invisibility */
+                            /* backdropFilter: 'blur(6px)', */
+                            boxShadow: '0 10px 30px rgba(0,0,0,0.7)',
+                            minWidth: '160px'
+                        });
+
+                        const item = document.createElement('div');
+                        item.className = 'instance-context-item';
+                        item.textContent = 'Gestor de archivos';
+                        Object.assign(item.style, {
+                            padding: '10px 12px',
+                            cursor: 'pointer',
+                            color: '#fff',
+                            fontWeight: '700',
+                            borderRadius: '6px'
+                        });
+
+                        item.addEventListener('mouseenter', () => item.style.background = 'rgba(255,255,255,0.03)');
+                        item.addEventListener('mouseleave', () => item.style.background = 'transparent');
+
+                        item.addEventListener('click', async () => {
+                            this.clearInstanceContextMenu();
+                            try {
+                                // try to load the latest instances list and find instance object
+                                const allInstances = await config.getInstanceList();
+                                const inst = allInstances.find(i => i.name === instance.name) || instance;
+                                await this.openFilesMenuForInstance(inst);
+                            } catch (e) {
+                                console.warn('openFilesMenu error', e);
+                            }
+                        });
+
+                        menu.appendChild(item);
+                        document.body.appendChild(menu);
+
+                        // close menu on outside click / escape
+                        const onDocClick = (e) => {
+                            if (!menu.contains(e.target)) this.clearInstanceContextMenu();
+                        };
+                        const onEsc = (e) => { if (e.key === 'Escape') this.clearInstanceContextMenu(); };
+                        setTimeout(() => {
+                            document.addEventListener('click', onDocClick, { once: true });
+                            document.addEventListener('keydown', onEsc, { once: true });
+                        }, 0);
+
+                        this._instanceContextMenu = { menu, onDocClick, onEsc };
+                    } catch (e) { console.warn('contextmenu handler', e); }
                 });
 
                 container.appendChild(el);
@@ -1464,6 +1559,86 @@ class Home {
 
         } catch (e) {
             console.warn('setAds error', e);
+        }
+    }
+
+    // NEW: remove instance context menu if present
+    clearInstanceContextMenu() {
+        try {
+            if (this._instanceContextMenu) {
+                const { menu } = this._instanceContextMenu;
+                if (menu && menu.parentNode) menu.parentNode.removeChild(menu);
+                try { document.removeEventListener('click', this._instanceContextMenu.onDocClick); } catch (e) {}
+                try { document.removeEventListener('keydown', this._instanceContextMenu.onEsc); } catch (e) {}
+                this._instanceContextMenu = null;
+            }
+        } catch (e) { /* ignore */ }
+    }
+
+    // NEW: Open Files Menu for a given instance (loads template/css/js if needed)
+    async openFilesMenuForInstance(instance) {
+        try {
+            if (!instance || !instance.name) return;
+            // compute candidate instance paths and pick first existing
+            const candidates = [];
+            try {
+                const appdataPath = await appdata().catch(() => null);
+                const dataDir = this.config?.dataDirectory || 'Minecraft';
+                if (appdataPath) {
+                    candidates.push(joinSafe(appdataPath, process.platform === 'darwin' ? dataDir : `.${dataDir}`, 'instances', instance.name));
+                    candidates.push(joinSafe(appdataPath, 'instances', instance.name));
+                }
+            } catch (e) {}
+            // common local candidates
+            candidates.push(joinSafe(process.cwd(), 'instances', instance.name));
+            candidates.push(joinSafe(process.cwd(), 'files', 'instances', instance.name));
+            candidates.push(joinSafe(__dirname, '..', '..', '..', 'files', 'instances', instance.name));
+            candidates.push(joinSafe(__dirname, '..', '..', '..', 'instances', instance.name));
+
+            let instancePath = null;
+            for (const c of candidates) {
+                try {
+                    if (!c) continue;
+                    if (fsAvailable) {
+                        if (fs.existsSync(c)) { instancePath = c; break; }
+                    } else {
+                        // if fs not available we cannot probe filesystem; pick first candidate
+                        instancePath = c;
+                        break;
+                    }
+                } catch (e) {}
+            }
+            // fallback: let panel try to operate with default (first candidate) even if not existing
+            if (!instancePath) instancePath = candidates[0] || joinSafe(process.cwd(), 'instances', instance.name);
+
+            // insert HTML template once
+            if (!document.querySelector('#files-menu-overlay')) {
+                try {
+                    let tplPath = joinSafe(__dirname, '..', '..', '..', 'panels', 'filesMenu.html');
+                    if (fsAvailable && fs.existsSync(tplPath)) {
+                        const tpl = fs.readFileSync(tplPath, 'utf8');
+                        document.body.insertAdjacentHTML('beforeend', tpl);
+                    } else {
+                        // fallback minimal structure if the file is missing or fs unavailable
+                        document.body.insertAdjacentHTML('beforeend', `<div id="files-menu-overlay" class="files-menu-overlay" hidden></div>`);
+                    }
+                } catch (e) { console.warn('failed to insert filesMenu template', e); }
+            }
+
+            // call open interface from filesMenu.js (exposed as window.openFilesMenu)
+            try {
+                if (window.openFilesMenu && typeof window.openFilesMenu === 'function') {
+                    window.openFilesMenu(instance.name, instancePath, instance);
+                } else {
+                    console.warn('files menu loader not available');
+                    // show user-friendly fallback: simple popup if utils.popup available
+                    try { new popup().openPopup({ title: 'Gestor de archivos', content: 'No fue posible abrir el gestor de archivos, aún en desarrollo.', color: 'red' }); } catch {}
+                }
+            } catch (e) {
+                console.warn('openFilesMenu invocation failed', e);
+            }
+        } catch (e) {
+            console.warn('openFilesMenuForInstance error', e);
         }
     }
 }

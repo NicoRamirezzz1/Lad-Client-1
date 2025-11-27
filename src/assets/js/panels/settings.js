@@ -6,6 +6,9 @@
 import { changePanel, accountSelect, database, Slider, config, setStatus, popup, appdata, setBackground } from '../utils.js'
 const { ipcRenderer } = require('electron');
 const os = require('os');
+// NEW: fs/path for partners loading
+const fs = require('fs');
+const path = require('path');
 
 class Settings {
     static id = "settings";
@@ -18,6 +21,8 @@ class Settings {
         this.javaPath()
         this.resolution()
         this.launcher()
+        // NEW: init legal tab bindings/loaders
+        this.legal()
     }
 
 
@@ -309,6 +314,98 @@ class Settings {
                 }
             }
         })
+    }
+
+    // NEW: populate/legal tab behavior
+    async legal() {
+        try {
+            const panel = document.getElementById('legal-tab');
+            if (!panel) return;
+
+            const partnersContainer = panel.querySelector('.partners-grid');
+            if (!partnersContainer) return;
+
+            // candidate directories where partners might be located
+            const candidateDirs = [];
+
+            try {
+                // 1) project folder relative to cwd: ./LadClient/files/partners
+                candidateDirs.push(path.join(process.cwd(), 'LadClient', 'files', 'partners'));
+            } catch (e) { }
+
+            try {
+                // 2) next to appData (common on systems): <appdata>/LadClient/files/partners
+                const appdataPath = await appdata().catch(() => null);
+                if (appdataPath) {
+                    candidateDirs.push(path.join(appdataPath, 'LadClient', 'files', 'partners'));
+                    // also try with a dot-prefix (some setups use .LadClient)
+                    candidateDirs.push(path.join(appdataPath, '.LadClient', 'files', 'partners'));
+                }
+            } catch (e) { }
+
+            try {
+                // 3) relative to current script folder: traverse upward to locate possible 'files/partners'
+                const pFromHere = path.join(__dirname, '..', '..', '..', 'files', 'partners');
+                candidateDirs.push(pFromHere);
+            } catch (e) { }
+
+            // clean duplicates and ensure existence
+            const seen = new Set();
+            const validDirs = [];
+            for (const d of candidateDirs) {
+                if (!d || seen.has(d)) continue;
+                seen.add(d);
+                try {
+                    if (fs.existsSync(d)) validDirs.push(d);
+                } catch (e) { /* ignore */ }
+            }
+
+            let images = [];
+            for (const dir of validDirs) {
+                try {
+                    const list = fs.readdirSync(dir);
+                    for (const f of list) {
+                        const ext = f.toLowerCase();
+                        if (ext.endsWith('.png') || ext.endsWith('.jpg') || ext.endsWith('.jpeg') || ext.endsWith('.webp')) {
+                            images.push(path.join(dir, f));
+                        }
+                    }
+                } catch (e) { /* ignore errors reading particular dir */ }
+            }
+
+            // create DOM elements for each found image
+            for (const imgPath of images) {
+                try {
+                    const item = document.createElement('div');
+                    item.className = 'partner-item';
+                    const img = document.createElement('img');
+                    // use file:// URI and encode spaces
+                    const fileUri = `file://${encodeURI(imgPath)}`;
+                    img.src = fileUri;
+                    img.alt = path.basename(imgPath);
+                    // optional: on click open external folder or image
+                    item.addEventListener('click', (e) => {
+                        try { ipcRenderer.invoke('show-item-in-folder', imgPath).catch(()=>{}); } catch(_) {}
+                    });
+                    item.appendChild(img);
+                    partnersContainer.appendChild(item);
+                } catch (e) {
+                    // create fallback placeholder per item if something fails
+                    try {
+                        const item = document.createElement('div');
+                        item.className = 'partner-item';
+                        const img = document.createElement('img');
+                        img.src = 'assets/images/icon.png';
+                        img.alt = 'Partner';
+                        item.appendChild(img);
+                        partnersContainer.appendChild(item);
+                    } catch (e2) { /* ignore */ }
+                }
+            }
+        } catch (e) {
+            // never throw in renderer init; just log minimal warning
+            console.warn('settings.legal init error', e && e.message ? e.message : e);
+        }
     }
 }
 export default Settings;

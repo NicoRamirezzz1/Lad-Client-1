@@ -3,32 +3,34 @@
     <div class="settings-sidebar">
         <div class="sidebar-header">
             <span class="settings-icon">⚙️</span>
-            <h2>Config</h2>
+            <h2>Ajustes</h2>
         </div>
         <div class="settings-tabs">
             <div id="account" class="settings-tab active-tab">
-                <span class="tab-icon">👤</span>
+                <img class="tab-icon" src="assets/images/logo/perfil.png" alt="Cuentas" style="width:24px;height:24px;object-fit:cover;border-radius:4px;">
                 <span class="tab-label">Cuentas</span>
             </div>
             <div id="java" class="settings-tab">
-                <span class="tab-icon">⚡</span>
+                <img class="tab-icon" src="assets/images/logo/ramm.png" alt="RAM" style="width:24px;height:24px;object-fit:cover;border-radius:4px;">
                 <span class="tab-label">RAM</span>
             </div>
             <div id="resolution" class="settings-tab">
-                <span class="tab-icon">📺</span>
+                <img class="tab-icon" src="assets/images/logo/settings.png" alt="Resolución" style="width:24px;height:24px;object-fit:cover;border-radius:4px;">
                 <span class="tab-label">Resolución</span>
             </div>
             <div id="launcher" class="settings-tab">
-                <span class="tab-icon">ℹ️</span>
+                <img class="tab-icon" src="assets/images/logo/info2.png" alt="Launcher" style="width:24px;height:24px;object-fit:contain;border-radius:4px;">
                 <span class="tab-label">Launcher</span>
+            </div>
+            <div id="legal" class="settings-tab">
+                <img class="tab-icon" src="assets/images/logo/legal.png" alt="Información Legal" style="width:24px;height:24px;object-fit:contain;border-radius:4px;">
+                <span class="tab-label">Información</span>
             </div>
         </div>
     </div>
 
-    <!-- Close button -->
     <button id="save" class="settings-close-btn">✕</button>
 
-    <!-- Content area -->
     <div class="settings-content">
         <!-- Account tab -->
         <div id="account-tab" class="settings-panel active-panel">
@@ -38,14 +40,6 @@
             </div>
             <div class="settings-card">
                 <div class="accounts-list content-scroll">
-                    <div class="account" id="add">
-                        <div class="account-card add-account">
-                            <div class="add-profile-icon">
-                                <span>+</span>
-                            </div>
-                            <div class="add-text-profile">Añadir Cuenta</div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -132,7 +126,7 @@
                 <div class="card-title">Acerca de Lad Client</div>
                 <div class="card-content">
                     <p class="launcher-info">
-                        Este launcher fue creado por <strong>@ImD4rken y @NicoGominola</strong>, Admin y Director de Lad Studio.
+                        Este launcher fue creado por <strong>@ImD4rken y @NicoGominola</strong>, Ex Admin y Director de Lad Studio.
                         El launcher Está hecho para jugar muchos eventos tanto para usuarios premium como no premium.
                         Le damos las gracias al equipo y a la comunidad por formar parte de este proyecto.
                     </p>
@@ -198,8 +192,8 @@
                         <div class="dev-avatar" style="background-image: url('assets/images/devs/darken.jpg')"></div>
                         <div class="dev-info">
                             <h4 class="dev-name">@ImD4rken</h4>
-                            <p class="dev-role">Admin & Developer 1</p>
-                            <p class="dev-description">Admin y Desarrollador Principal del Launcher.</p>
+                            <p class="dev-role">ExAdmin & Developer 1</p>
+                            <p class="dev-description">ExAdmin y Desarrollador Principal del Launcher.</p>
                         </div>
                     </div>
 
@@ -215,5 +209,96 @@
                 </div>
             </div>
         </div>
+
+        <div id="legal-tab" class="settings-panel content-scroll">
+            <div class="panel-header">
+                <h2>Información Legal</h2>
+                <p class="panel-subtitle">Términos, privacidad, créditos y partners</p>
+            </div>
+
+            <div class="settings-card">
+                <div class="card-title">1. Términos y Condiciones</div>
+                <div class="card-content">
+                    <div class="legal-section">
+                        <h3 class="legal-title">Términos y Condiciones</h3>
+                        <div class="legal-text content-scroll">
+                            <p>
+                                Al utilizar este launcher, el usuario acepta los términos y condiciones de uso aplicables.
+                                El uso del software está sujeto a las leyes locales y a las políticas del servicio. El usuario
+                                se compromete a no utilizar el launcher para fines ilícitos ni a modificarlo de forma que
+                                vulnere los derechos de terceros.
+                            </p>
+                            <p>
+                                El software se proporciona "tal cual" sin garantías explícitas. Los desarrolladores no serán
+                                responsables de pérdidas directas o indirectas que pudieran derivarse del uso del launcher.
+                            </p>
+                            <p>
+                                Estas condiciones pueden ser actualizadas sin previo aviso; se recomienda revisar esta sección
+                                periódicamente.
+                            </p>
+                            <p>El usuario acepta que cualquier disputa se resolverá conforme a la jurisdicción aplicable indicada por los desarrolladores.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-card">
+                <div class="card-title">2. Política de Privacidad</div>
+                <div class="card-content">
+                    <div class="legal-section">
+                        <h3 class="legal-title">Política de Privacidad</h3>
+                        <div class="legal-text content-scroll">
+                            <p>
+                                El launcher puede recopilar o utilizar la siguiente información con fines operativos y de soporte:
+                            </p>
+                            <ul>
+                                <li><strong>Nombre de cuenta:</strong> usado para identificar la sesión y las instancias desbloqueadas.</li>
+                                <li><strong>HWID:</strong> identificador de equipo (hash) para medidas de seguridad y detección de fraudes.</li>
+                                <li><strong>IP pública:</strong> utilizada con fines analíticos y de seguridad.</li>
+                                <li><strong>Logs locales:</strong> en caso de errores, se podrán leer logs locales para diagnóstico.</li>
+                            </ul>
+                            <p class="info-highlight">
+                                Estos datos se tratan con la finalidad de mantener la integridad del servicio. No se compartirán con terceros.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-card">
+                <div class="card-title">3. Créditos</div>
+                <div class="card-content">
+                    <div class="legal-section">
+                        <h3 class="legal-title">Créditos</h3>
+                        <div class="legal-text content-scroll">
+                            <p><strong>Programación del launcher:</strong> @ImD4rken & @NicoGominola</p>
+                            <p><strong>Creditos generales:</strong> NicoGominola, NeoHosting, ImD4rken, "Miguelki", ZephyHosting, Lumen Studios, XeroHost.</p>
+                        </div>
+                        <p>Gracias a todos.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-card">
+                <div class="card-title">4. Partners / Sponsors</div>
+                <div class="card-content">
+                    <div class="legal-section">
+                        <h3 class="legal-title">Partners</h3>
+                        <div class="partners-grid" aria-live="polite">
+                            <div class="partner-item">
+                                <img class="partner-logo" src="assets/images/devs/NeoHosting.png" alt="NeoHosting">
+                            </div>
+                            <div class="partner-item">
+                                <img class="partner-logo" src="assets/images/devs/Zephy.png" alt="ZephyHosting">
+                            </div>
+                            <div class="partner-item">
+                                <img class="partner-logo" src="assets/images/devs/xerohost.png" alt="Xerohost">
+                            </div>
+                    </div>
+                    <p>Gracias por el apoyo, juntos estamos construyendo una gran comunidad.</p>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
