@@ -1,0 +1,110 @@
+<div class="container">
+    <!-- Header Top -->
+    <div class="home-header">
+        <div class="server-card">
+            <img class="server-status-icon" src="assets/images/icon.png" alt="Server">
+            <div class="server-info">
+                <div class="server-instance-title">Selecciona una instancia</div>
+            </div>
+            <div class="player-badge">
+                <span class="player-count"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="home-content">
+        <!-- Instance Avatars Sidebar -->
+        <div class="instances-sidebar">
+            <div class="instances-header">
+                <span class="instances-title">Instancias</span>
+            </div>
+            <div class="instance-avatars content-scroll"></div>
+        </div>
+
+        <!-- Center Content -->
+        <div class="home-center">
+            <div class="welcome-section">
+                <h1>Bienvenido a Lad Client</h1>
+                <p>Selecciona una instancia o crea una nueva</p>
+            </div>
+        </div>
+    </div>
+
+    <a class="paypal-badge-link" href="https://paypal.me/NicoRzz" target="_blank" rel="noopener noreferrer" aria-label="PayPal - Abrir en PayPal">
+        <img class="paypal-badge" src="assets/images/logo/paypal.png" alt="PayPal">
+    </a>
+
+    <!-- Ads panel: reproducirá el video remoto y tiene botón "i" que abre el enlace definido -->
+    <div class="ads-panel" aria-hidden="false">
+        <div class="ads-header">
+            <div class="ads-title">ANUNCIOS</div>
+            <button class="ads-info" title="Más info">i</button>
+        </div>
+        <div class="ads-video-wrap">
+            <video class="ads-video" playsinline muted preload="metadata" loop></video>
+        </div>
+    </div>
+
+    <!-- Bottom Action Bar -->
+    <div class="home-actions">
+        <div class="player-options header-player">
+            <div class="player-head"></div>
+        </div>
+        <button class="instance-select">
+                <img class="tab-icon" src="assets/images/logo/instancias.png" alt="Codigo De instancias" style="width:24px;height:24px;object-fit:contain;border-radius:4px;">
+            <span class="action-text">Nueva Instancia</span>
+        </button>
+        <div class="play-instance">
+            <button class="play-btn">JUGAR</button>
+        </div>
+        <button class="settings-btn icon-settings"></button>
+    </div>
+
+    <!-- Instance Selector Modal -->
+    <div class="instance-popup">
+        <div class="instances-modal">
+            <div class="modal-header">
+                <h2>📦 Colocar Codigo De Instancias</h2>
+                <!-- Added: small search control (visual, client-side only) -->
+                <div class="modal-search" aria-hidden="false" title="Buscar instancias">
+                    <input type="search" placeholder="Buscar instancia..." aria-label="Buscar instancias">
+                </div>
+                <button class="close-popup icon-close" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-content">
+                <div class="instances-List"></div>
+
+                <!-- Unlock Code Section -->
+                <div class="code-unlock-section">
+                    <div class="code-unlock-divider"></div>
+                    <p class="code-unlock-label">🔐 Desbloquea una instancia con código:</p>
+                    <div class="code-unlock-input-container">
+                        <input type="text" class="code-unlock-input" placeholder="Ingresa el código..." maxlength="50">
+                        <button class="code-unlock-button">Desbloquear</button>
+                    </div>
+                    <div class="code-unlock-message"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Starting Game -->
+    <div class="info-starting-game">
+        <div class="starting-box">
+            <div class="starting-left">
+                <div class="starting-title">INICIANDO MINECRAFT...</div>
+                <div class="info-starting-game-text">Conectando...</div>
+                <progress value="0" max="0" class="progress-bar"></progress>
+            </div>
+            <div class="starting-right">
+                <img class="starting-icon-big" src="assets/images/icon.png" alt="Loading Icon">
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Already Starting Notification -->
+    <div class="game-starting-notification">
+        <span class="notification-text">⚠️ No puedes iniciar Minecraft mientras ya estás iniciando el juego</span>
+    </div>
+</div>

@@ -1,0 +1,325 @@
+@import 'font.css';
+@import 'theme.css';
+@import 'panels/login.css';
+@import 'panels/home.css';
+@import 'panels/settings.css';
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    /* Evita la aparición de la barra de scroll global al iniciar el launcher */
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    color: var(--color);
+    font-family: 'Poppins';
+    font-weight: bolder;
+}
+
+img {
+    -webkit-user-drag: none;
+    user-select: none;
+}
+
+* {
+    outline: none;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.content-scroll {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: 100%;
+}
+
+.content-scroll::-webkit-scrollbar {
+    width: 0;
+}
+
+.dragbar {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 26px;
+    -webkit-app-region: drag;
+    z-index: 11;
+}
+
+.darwin .frame {
+    background: transparent;
+    position: fixed;
+    top: 0px;
+    z-index: 11;
+    -webkit-app-region: no-drag;
+    display: none;
+}
+
+.other .frame {
+    background: transparent;
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    z-index: 11;
+    -webkit-app-region: no-drag;
+    display: none;
+}
+
+.frame.hide {
+    display: block;
+}
+
+.darwin .button-frame {
+    position: relative;
+    display: table-cell;
+    width: 20px;
+    height: 26px;
+    transition: color .2s, background-color .2s;
+}
+
+.other .button-frame {
+    position: relative;
+    display: table-cell;
+    width: 30px;
+    height: 26px;
+    transition: color .2s, background-color .2s;
+    color: black;
+    cursor: pointer;
+}
+
+.button-frame:before {
+    position: absolute;
+    top: 6px;
+    left: 8px;
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+    color: #f8f9f9;
+}
+
+.darwin-icon-minimize,
+.darwin-icon-maximize,
+.darwin-icon-close {
+    position: relative;
+}
+
+.darwin-icon-minimize:before,
+.darwin-icon-maximize:before,
+.darwin-icon-close:before {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    cursor: pointer;
+}
+
+.darwin-icon-minimize:before {
+    background: #07d014;
+}
+
+.darwin-icon-maximize:before {
+    background: #ffbd2e;
+}
+
+.darwin-icon-close:before {
+    background: #ff6047;
+}
+
+.icon-close:hover {
+    background: #e21212;
+}
+
+.icon-minimize:hover,
+.icon-restore-down:hover,
+.icon-maximize:hover {
+    background-color: #0000009d;
+}
+
+.popup {
+    /* Cambiado de absolute a fixed para que el popup no provoque scroll del body */
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+}
+
+.popup-tab {
+    width: 40%;
+    padding: 25px;
+    background: linear-gradient(135deg, var(--background) 0%, rgba(var(--color-rgb), 0.1) 100%);
+    border-radius: 20px;
+    z-index: 10;
+    border: 2px solid var(--color);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    animation: popupSlideIn 0.3s ease-out;
+}
+
+@keyframes popupSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.popup-title {
+    text-align: center;
+    font-size: 2rem;
+    border-bottom: solid 4px var(--color);
+    margin-bottom: 1rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.popup-content {
+    text-align: center;
+    font-size: 1.1rem;
+    margin: 1.5rem 0;
+    line-height: 1.6;
+}
+
+.popup-options {
+    display: none;
+    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 1.5rem;
+}
+
+.popup-button {
+    background: linear-gradient(135deg, var(--color) 0%, rgba(var(--color-rgb), 0.8) 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 0.8rem 3rem;
+    font-size: inherit;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.popup-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.popup-button:active {
+    transform: translateY(0);
+}
+
+.panel {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    max-height: 100vh; /* evita que el panel empuje la página */
+    overflow: hidden;  /* el contenido con scroll debe usar .content-scroll */
+    opacity: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.active {
+    opacity: 1;
+    z-index: 1;
+    pointer-events: all;
+}
+
+/* Dynamic launcher background */
+body {
+    background-color: var(--background);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    transition: background-image 0.4s ease-in-out, background-color 0.2s linear;
+}
+
+/* Instance selector - banner card styles */
+.instances-List {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* at least 2 columns */
+    gap: 18px;
+    padding: 20px;
+    align-items: start;
+    max-height: 60vh; /* allow vertical growth but limit height */
+    overflow-y: auto;
+}
+
+/* Responsive: more columns on wider screens */
+@media (min-width: 1100px) {
+    .instances-List { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 1500px) {
+    .instances-List { grid-template-columns: repeat(4, 1fr); }
+}
+
+.instance-card {
+    cursor: pointer;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    transform-origin: center;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+    background: linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.02));
+    width: 100%;
+}
+
+.instance-card:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 14px 40px rgba(0,0,0,0.45);
+}
+
+/* Navigation arrows for horizontal scroller */
+.instances-nav { display: none; }
+
+.instance-banner {
+    width: 100%;
+    height: 140px; /* taller banner for horizontal layout */
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.instance-banner-overlay {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 12px 14px;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.55) 100%);
+    display: flex;
+    align-items: flex-end;
+}
+
+.instance-name {
+    color: #fff;
+    font-weight: 800;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    font-size: 1.05rem;
+}
+
+.instance-card.active-instance {
+    outline: 3px solid rgba(114,137,218,0.95);
+}

@@ -1,0 +1,136 @@
+/* Contenedor principal */
+.login .container {
+    display: flex;
+    align-items: center; /* centrado vertical */
+    justify-content: center; /* centrado horizontal */
+    height: 100%;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Cada pestaña de login */
+.login-tabs {
+    display: none; /* se mostrará según JS */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 400px; /* más ancho para ser grande */
+    padding: 30px;
+    background: var(--background, #fff);
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* Mostrar pestaña activa */
+.login-tabs.active {
+    display: flex;
+}
+
+/* Texto principal */
+.login-text {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+/* Inputs y botones */
+.input-login .email,
+.input-login .password,
+.A2F {
+    width: 90%;
+    margin: 10px 0;
+    padding: 12px;
+    border-radius: 25px;
+    border: 2px solid var(--element-color, #0078D4);
+    background: none;
+    color: var(--color, #000);
+    font-size: 1rem;
+}
+
+/* Contenedor de botones */
+.login-options {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+}
+
+/* Botones */
+.connect,
+.cancel {
+    width: 90%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 12px;
+    border: 2px solid var(--element-color, #0078D4);
+    background: none;
+    color: var(--color, #000);
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+.connect:hover,
+.cancel:hover {
+    transform: scale(1.05);
+}
+
+/* ===== LOGIN SELECT ESTILO ESPECIAL ===== */
+.login-select {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-select .main-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.login-select .divider {
+    width: 80%;
+    border: none;
+    border-top: 3px solid #ccc;
+    margin-bottom: 15px;
+}
+
+.login-select .subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 25px;
+    color: #555;
+}
+
+.login-select .separator {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    text-align: center;
+    color: #888;
+    font-weight: bold;
+    margin: 20px 0;
+}
+
+.login-select .separator::before,
+.login-select .separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #ccc;
+    margin: 0 10px;
+}
+
+.login-select .connect {
+    width: 100%;
+    text-align: center;
+}
+
+.login-select .footer {
+    margin-top: 30px;
+    font-size: 1rem;
+    color: #888;
+}

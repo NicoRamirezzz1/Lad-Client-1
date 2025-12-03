@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self';">
+    <title>Lad Client</title>
+    <link rel="stylesheet" href="assets/css/index.css">
+    <style>
+        /* Solo ajustes rápidos en línea, la mayor parte está en index.css */
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: 
+                linear-gradient(135deg, rgba(50, 50, 50, 0.5) 0%, rgba(30, 30, 30, 0.6) 100%),
+                url('./assets/images/background/dark/2.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #000000;
+        }
+
+        #splash {
+            text-align: center;
+            color: white;
+        }
+
+        #splash img.splash {
+            width: 180px;
+            height: 180px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="splash">
+        <img class="splash" src="assets/images/icon.ico" />
+        <p class="title">Iniciando Lad Client</p>
+        <!-- Mensajes dinámicos que usa index.js -->
+        <p class="splash-message"></p>
+        <p class="message"></p>
+        <progress value="0" max="100" class="progress"></progress>
+    </div>
+    <script src="assets/js/index.js" type="module"></script>
+</body>
+</html>

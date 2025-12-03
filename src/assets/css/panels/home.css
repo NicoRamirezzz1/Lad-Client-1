@@ -1,0 +1,2030 @@
+/* ==================== MAIN CONTAINER ==================== */
+.home .container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: linear-gradient(135deg, var(--background) 0%, rgba(0,0,0,0.3) 100%);
+    position: relative;
+}
+
+/* ==================== HEADER ==================== */
+@keyframes slideInDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.home-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.4rem 2.5rem;
+    background: transparent;
+    border-bottom: none;
+    gap: 1.5rem;
+    animation: slideInDown 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: none;
+    height: fit-content;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+}
+
+/* Server Card */
+.server-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    border: 1px solid rgba(128, 128, 128, 0.25);
+    border-radius: 14px;
+    padding: 0.8rem 1.2rem;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    flex: 0 1 auto;
+    backdrop-filter: blur(8px);
+}
+
+.server-card:hover {
+    background: linear-gradient(135deg, rgba(70, 70, 70, 0.5) 0%, rgba(60, 60, 60, 0.3) 100%);
+    border-color: rgba(128, 128, 128, 0.4);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+.server-status-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    object-fit: cover;
+    image-rendering: pixelated;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(128, 128, 128, 0.15);
+}
+
+.server-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    flex: 1;
+}
+
+.server-name {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.3px;
+}
+
+.server-ping {
+    font-size: 0.95rem;
+    color: #2ECC71;
+    font-weight: 700;
+}
+
+
+
+/* Player Profile Header */
+.header-player {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, rgba(70, 70, 70, 0.4) 0%, rgba(50, 50, 50, 0.2) 100%);
+    border: 1.5px solid rgba(128, 128, 128, 0.25);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    margin: 0;
+    backdrop-filter: blur(8px);
+    z-index: 50;
+    flex-shrink: 0;
+}
+
+.header-player:hover {
+    background: linear-gradient(135deg, rgba(80, 80, 80, 0.5) 0%, rgba(60, 60, 60, 0.3) 100%);
+    border-color: rgba(128, 128, 128, 0.4);
+    transform: scale(1.06) translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.header-player .player-head {
+    width: 52px;
+    height: 52px;
+    border-radius: 8px;
+    margin: 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ==================== MAIN CONTENT ==================== */
+.home-content {
+    display: flex;
+    flex: 1;
+    gap: 0;
+    overflow: hidden;
+}
+
+/* Instances Sidebar */
+.instances-sidebar {
+    width: 160px;
+    background: linear-gradient(180deg, rgb(35 35 35 / 0%) 0%, rgb(20 20 20 / 75%) 100%);
+    border-right: 1px solid rgba(128, 128, 128, 0.2);
+    display: flex;
+    flex-direction: column;
+    animation: slideInLeft 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: inset -2px 0 12px rgba(0, 0, 0, 0.4), 2px 0 8px rgba(0, 0, 0, 0.2);
+    height: 100%;
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.instances-header {
+    padding: 1.4rem 1.2rem;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.15) 100%);
+}
+
+.instances-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #a8a8a8 0%, #d8d8d8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.2px;
+}
+
+/* Instance Avatars Container */
+.instance-avatars {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 1.2rem 0.8rem;
+    overflow-y: auto;
+    flex: 1;
+    align-items: stretch; /* asegurar que los hijos se extiendan al 100% de ancho */
+}
+
+.instance-avatars::-webkit-scrollbar {
+    width: 6px;
+}
+
+.instance-avatars::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.instance-avatars::-webkit-scrollbar-thumb {
+    background: rgba(128, 128, 128, 0.3) !important;
+    border-radius: 3px;
+}
+
+.instance-avatars::-webkit-scrollbar-thumb:hover {
+    background: rgba(128, 128, 128, 0.5);
+}
+
+/* Individual Instance Avatar */
+.instance-avatar {
+    width: 100%; /* siempre full width dentro del contenedor */
+    min-width: 0;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: var(--background-element);
+    background-position: center;
+    background-size: cover;
+    border: 2px solid rgba(128, 128, 128, 0.15);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    display: block;
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.28s, filter 0.28s;
+    position: relative;
+    image-rendering: pixelated;
+    flex-shrink: 0;
+}
+
+/* No cambiar layout (width/margin) al activarse: usar transform/scale sólo */
+.instance-avatar.active {
+    /* mantener tamaño en flujo, solo aplicar efecto visual */
+    width: 100%;
+    margin: 0;
+    transform: translateY(-6px) scale(1.03);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow:
+        0 10px 26px rgba(0,0,0,0.55),
+        inset 0 6px 18px rgba(255,255,255,0.02);
+    filter: saturate(1.06) brightness(1.02);
+}
+
+/* ajustar hover manteniendo el mismo flujo */
+.instance-avatar.active:hover {
+    transform: translateY(-8px) scale(1.04);
+    box-shadow:
+        0 12px 30px rgba(0,0,0,0.6),
+        inset 0 8px 22px rgba(255,255,255,0.03);
+}
+
+.instance-avatar.locked {
+    filter: grayscale(85%) brightness(0.6);
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.instance-avatar.locked::after {
+    content: '🔒';
+    position: absolute;
+    font-size: 1.6rem;
+    right: 3px;
+    bottom: 3px;
+    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.8);
+    filter: drop-shadow(0 0 4px rgba(255, 0, 0, 0.5));
+}
+
+.no-instances {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 1.5rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ==================== CENTER CONTENT ==================== */
+.home-center {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    overflow-y: auto;
+}
+
+.welcome-section {
+    display: none;
+}
+
+.welcome-section h1 {
+    font-size: 2.8rem;
+    font-weight: 900;
+    margin-bottom: 1.2rem;
+    background: linear-gradient(135deg, #b0b0b0 0%, #e0e0e0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+}
+
+.welcome-section p {
+    font-size: 1.3rem;
+    color: rgba(255, 255, 255, 0.75);
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==================== ACTION BAR ==================== */
+.home-actions {
+    position: fixed;
+    top: 570px;
+    left: 370px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.8rem;
+    padding: 1.4rem 2.5rem;
+    background: linear-gradient(135deg, rgba(25, 25, 25, 0.9) 0%, rgba(40, 40, 40, 0.7) 100%);
+    border-top: 1px solid rgba(128, 128, 128, 0.2);
+    animation: slideInUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: inset 0 2px 8px rgba(255, 255, 255, 0.05), 0 -4px 12px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Instance Select Button */
+.instance-select {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.85rem 1.6rem;
+    background: linear-gradient(135deg, rgba(70, 70, 70, 0.3) 0%, rgba(50, 50, 50, 0.2) 100%);
+    border: 1.5px solid rgba(128, 128, 128, 0.25);
+    border-radius: 11px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-top: 0;
+    height: auto;
+    width: auto;
+    backdrop-filter: blur(8px);
+}
+
+.action-icon {
+    font-size: 1.3rem;
+}
+
+.action-text {
+    display: none;
+}
+
+.instance-select:hover {
+    background: linear-gradient(135deg, rgba(80, 80, 80, 0.4) 0%, rgba(60, 60, 60, 0.3) 100%);
+    border-color: rgba(128, 128, 128, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+}
+
+.instance-select:active {
+    transform: translateY(-1px);
+}
+
+/* Play Button Container */
+.play-instance {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    background: linear-gradient(135deg, var(--box-button) 0%, var(--box-button-hover) 100%);
+    box-shadow: 0px 3px 10px rgba(from var(--box-button) r g b / 0.3);
+    border-radius: 10px;
+    color: #fff;
+    cursor: pointer;
+    z-index: 3;
+    transition: all 0.3s ease;
+    height: 3.2rem;
+    padding-right: 1.5rem;
+    padding-left: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    overflow: hidden;
+}
+
+.play-instance.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.play-instance:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0px 6px 15px rgba(from var(--box-button) r g b / 0.5);
+}
+
+.play-btn {
+    border: none;
+    border-radius: 10px;
+    background: none;
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 800;
+    padding: 0.9rem 2.6rem;
+    min-width: auto;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.play-btn:hover {
+    transform: scale(1.02);
+}
+
+.play-btn:active {
+    transform: scale(0.98);
+}
+
+/* Settings Button in Action Bar */
+.home-actions .settings-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 1.4rem;
+    color: var(--element-color);
+    background: linear-gradient(135deg, rgba(70, 70, 70, 0.3) 0%, rgba(50, 50, 50, 0.2) 100%);
+    border: 1.5px solid rgba(128, 128, 128, 0.25);
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    margin: 0;
+    backdrop-filter: blur(8px);
+}
+
+.home-actions .settings-btn:hover {
+    background: linear-gradient(135deg, rgba(80, 80, 80, 0.4) 0%, rgba(60, 60, 60, 0.3) 100%);
+    border-color: rgba(128, 128, 128, 0.4);
+    transform: rotate(45deg) scale(1.08);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.home-actions .settings-btn:active {
+    transform: rotate(45deg) scale(0.96);
+}
+
+/* Audio Button in Action Bar */
+.home-actions .audio-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 1.2rem;
+    color: var(--element-color);
+    background: linear-gradient(135deg, rgba(70, 70, 70, 0.3) 0%, rgba(50, 50, 50, 0.2) 100%);
+    border: 1.5px solid rgba(128, 128, 128, 0.25);
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    margin: 0;
+    backdrop-filter: blur(8px);
+    user-select: none;
+    line-height: 1;
+}
+
+/* visual active state when audio is playing */
+.home-actions .audio-btn.playing {
+    background: linear-gradient(135deg, var(--element-color) 0%, rgba(var(--element-color-rgb), 0.85) 100%);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 20px rgba(var(--element-color-rgb), 0.25);
+    transform: translateY(-2px) scale(1.02);
+}
+
+/* hover / active interactions mirror settings button */
+.home-actions .audio-btn:hover {
+    background: linear-gradient(135deg, rgba(80, 80, 80, 0.4) 0%, rgba(60, 60, 60, 0.3) 100%);
+    border-color: rgba(128, 128, 128, 0.4);
+    transform: rotate(45deg) scale(1.08);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.home-actions .audio-btn:active {
+    transform: rotate(45deg) scale(0.96);
+}
+
+/* ==================== INSTANCE SELECTOR MODAL ==================== */
+.instance-popup {
+    position: absolute;
+    display: none;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    animation: none !important;
+    transition: none !important;
+    user-select: none; /* prevent text selection inside popup */
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.instances-modal {
+    background: linear-gradient(135deg, rgba(28, 28, 28, 0.95) 0%, rgba(18, 18, 18, 0.98) 100%);
+    border-radius: 18px;
+    width: min(900px, 92%);
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    animation: none !important;
+    border: 1px solid rgba(128, 128, 128, 0.25);
+}
+
+/* Modal Header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 2.3rem;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+    background: linear-gradient(135deg, rgba(50, 50, 50, 0.8) 0%, rgba(30, 30, 30, 0.9) 100%);
+    border-radius: 18px 18px 0 0;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.9rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #a8a8a8 0%, #e0e0e0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.3px;
+}
+
+/* Close Button */
+.close-popup {
+    width: 48px;
+    height: 48px;
+    background: rgba(240, 71, 71, 0.1);
+    border: 1.5px solid rgba(240, 71, 71, 0.2);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: #ff8888;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+}
+
+.close-popup:hover {
+    background: rgba(240, 71, 71, 0.2);
+    border-color: rgba(240, 71, 71, 0.4);
+    color: #ff6666;
+    transform: scale(1.08) rotate(45deg);
+    box-shadow: 0 4px 12px rgba(240, 71, 71, 0.2);
+}
+
+.close-popup:active {
+    transform: scale(0.95) rotate(45deg);
+}
+
+/* Modal Content */
+.modal-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2.2rem;
+}
+
+.modal-content::-webkit-scrollbar {
+    width: 10px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: rgba(128, 128, 128, 0.05);
+    border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, rgba(128, 128, 128, 0.3) 0%, rgba(100, 100, 100, 0.4) 100%);
+    border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, rgba(128, 128, 128, 0.5) 0%, rgba(100, 100, 100, 0.6) 100%);
+}
+
+/* Instances List */
+.instances-List {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding: 0.5rem 0;
+}
+
+.instances-List::-webkit-scrollbar {
+    width: 8px;
+}
+
+.instances-List::-webkit-scrollbar-track {
+    background: rgba(128, 128, 128, 0.05);
+    border-radius: 10px;
+}
+
+.instances-List::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, rgba(128, 128, 128, 0.3) 0%, rgba(100, 100, 100, 0.4) 100%);
+    border-radius: 10px;
+}
+
+.instances-List::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, rgba(128, 128, 128, 0.5) 0%, rgba(100, 100, 100, 0.6) 100%);
+}
+
+/* Instance Card - Dynamic Elements */
+.instance-card {
+    height: 140px;
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid rgba(128, 128, 128, 0.2);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+    background: rgba(35, 35, 35, 0.6);
+    position: relative;
+}
+
+.instance-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(128, 128, 128, 0.4);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+.instance-card.active-instance {
+    border-color: rgba(128, 128, 128, 0.6);
+    transform: scale(1.02);
+}
+
+.instance-banner {
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-size: cover;
+    background-color: rgba(50, 50, 50, 0.7);
+    position: relative;
+}
+
+.instance-banner-overlay {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.6) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.instance-name {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #ffffff;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+    z-index: 2;
+    text-align: center;
+    padding: 0 5rem;
+}
+
+.instance-elements {
+    background: rgba(60, 60, 60, 0.4);
+    border: 1.5px solid rgba(128, 128, 128, 0.2);
+    border-radius: 12px;
+    padding: 1.6rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    min-height: 160px;
+    justify-content: space-between;
+    backdrop-filter: blur(8px);
+}
+
+.instance-elements:hover {
+    background: rgba(70, 70, 70, 0.5);
+    border-color: rgba(128, 128, 128, 0.35);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+    transform: translateY(-4px);
+}
+
+.instance-elements.active-instance {
+    background: linear-gradient(135deg, rgba(100, 100, 100, 0.35) 0%, rgba(80, 80, 80, 0.2) 100%);
+    border-color: rgba(128, 128, 128, 0.45);
+    box-shadow: 0 0 25px rgba(128, 128, 128, 0.35), inset 0 0 12px rgba(128, 128, 128, 0.1);
+}
+
+.instance-elements-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-align: center;
+}
+
+.instance-elements-version {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.locked-code-card {
+    opacity: 0.7;
+    position: relative;
+}
+
+.locked-code-card .instance-banner-overlay {
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.instance-lock-icon {
+    font-size: 2rem;
+}
+
+/* Unlock Code Section */
+.code-unlock-section {
+    margin-top: 2.2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(128, 128, 128, 0.2);
+}
+
+.code-unlock-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(128, 128, 128, 0.25) 50%, transparent 100%);
+    margin-bottom: 1.8rem;
+}
+
+.code-unlock-label {
+    font-size: 1.05rem;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 1.4rem;
+    font-weight: 700;
+    display: block;
+    text-align: center;
+}
+
+.code-unlock-input-container {
+    display: flex;
+    gap: 0.8rem;
+    justify-content: center;
+    margin-bottom: 1.3rem;
+    flex-wrap: wrap;
+}
+
+.code-unlock-input {
+    padding: 0.9rem 1.3rem;
+    border: 1.5px solid rgba(128, 128, 128, 0.2);
+    background: linear-gradient(135deg, rgba(50, 50, 50, 0.3) 0%, rgba(40, 40, 40, 0.2) 100%);
+    color: var(--color);
+    border-radius: 9px;
+    font-size: 1rem;
+    width: 300px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(8px);
+}
+
+.code-unlock-input:focus {
+    outline: none;
+    border-color: var(--element-color);
+    background: linear-gradient(135deg, rgba(60, 60, 60, 0.4) 0%, rgba(50, 50, 50, 0.3) 100%);
+    box-shadow: 0 0 16px rgba(var(--element-color-rgb), 0.3);
+}
+
+.code-unlock-button {
+    padding: 0.9rem 2.2rem;
+    background: linear-gradient(135deg, var(--element-color) 0%, rgba(var(--element-color-rgb), 0.8) 100%);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 9px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 6px 16px rgba(var(--element-color-rgb), 0.3);
+}
+
+.code-unlock-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(var(--element-color-rgb), 0.4);
+}
+
+.code-unlock-button:active {
+    transform: translateY(0);
+}
+
+.code-unlock-message {
+    text-align: center;
+    font-size: 0.9rem;
+    min-height: 1.5rem;
+    margin-top: 0.8rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* ==================== INFO STARTING GAME ==================== */
+.info-starting-game {
+    display: none;
+    text-align: center;
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+}
+
+.starting-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--background);
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    border: 1px solid rgba(128, 128, 128, 0.2);
+    width: auto;
+    max-width: 600px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+    animation: slideInUp 0.4s ease;
+}
+
+.starting-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.8rem;
+}
+
+.starting-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--color);
+    margin: 0;
+}
+
+.info-starting-game-text {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+}
+
+.progress-bar {
+    width: 250px;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 0;
+}
+
+.progress-bar::-webkit-progress-bar {
+    background-color: rgba(128, 128, 128, 0.2);
+    border: 1px solid rgba(128, 128, 128, 0.3);
+    border-radius: 3px;
+}
+
+.progress-bar::-webkit-progress-value {
+    background: linear-gradient(90deg, var(--element-color) 0%, rgba(128, 128, 128, 0.5) 100%);
+    border-radius: 3px;
+}
+
+.starting-right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 2rem;
+}
+
+.starting-icon-big {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    object-fit: cover;
+    image-rendering: pixelated;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* ==================== PLAYER HEAD ==================== */
+.player-head {
+    background: url('../../images/default/setve.png') no-repeat;
+    background-size: cover;
+    image-rendering: pixelated;
+    transition: transform 0.3s ease;
+    height: 100%;
+    width: 100%;
+    border-radius: 6px;
+}
+
+/* ==================== TOOLTIP ==================== */
+.instance-tooltip {
+    position: fixed;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    pointer-events: none;
+    white-space: nowrap;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(128, 128, 128, 0.2);
+    animation: fadeIn 0.2s ease;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 1200px) {
+    .home-actions {
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .instance-avatars {
+        gap: 0.6rem;
+    }
+    
+    .instances-List {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
+    
+    .paypal-badge-container { left: 16px; bottom: 78px; }
+    .paypal-badge { width: 120px; }
+}
+
+@media (max-width: 900px) {
+    .instances-sidebar {
+        width: 150px;
+    }
+    
+    .instances-title {
+        font-size: 0.9rem;
+    }
+    
+    .instance-avatar {
+        border-radius: 8px;
+    }
+    
+    .server-card {
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .instance-select {
+        padding: 0.7rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .instances-List {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .modal-header {
+        padding: 1.5rem;
+    }
+    
+    .modal-header h2 {
+        font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .home-header {
+        flex-direction: column;
+        padding: 1rem;
+        gap: 1rem;
+    }
+    
+    .home-content {
+        flex-direction: column;
+    }
+    
+    .instances-sidebar {
+        width: 100%;
+        height: 120px;
+        flex-direction: row;
+    }
+    
+    .instances-header {
+        display: none;
+    }
+    
+    .instance-avatars {
+        flex-direction: row;
+        gap: 0.8rem;
+    }
+    
+    .instance-avatar {
+        width: 80px;
+        height: 80px;
+        min-width: 80px;
+    }
+    
+    .server-card {
+        padding: 1rem;
+        gap: 1rem;
+    }
+    
+    .server-status-icon {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .player-badge {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+    
+    .header-player {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .home-actions {
+        gap: 0.8rem;
+        padding: 1rem;
+    }
+    
+    .action-text {
+        display: none;
+    }
+    
+    .instance-select {
+        padding: 0.6rem 1rem;
+    }
+    
+    .instances-List {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 0.8rem;
+    }
+    
+    .instance-elements {
+        padding: 1.2rem;
+        min-height: 120px;
+    }
+    
+    .modal-content {
+        padding: 1rem;
+    }
+    
+    .code-unlock-input-container {
+        flex-direction: column;
+    }
+    
+    .code-unlock-input {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .instance-select {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+    
+    .play-btn {
+        padding: 0.6rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    .instances-List {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+    
+    .instance-elements {
+        padding: 1rem;
+        min-height: 100px;
+    }
+    
+    .starting-box {
+        flex-direction: column;
+        padding: 1rem;
+    }
+    
+    .starting-right {
+        margin-left: 0;
+        margin-top: 1rem;
+    }
+    
+    .progress-bar {
+        width: 200px;
+    }
+    
+    .paypal-badge-container { left: 10px; bottom: 100px; }
+    .paypal-badge { width: 82px; }
+}
+
+/* ==================== GAME STARTING NOTIFICATION ==================== */
+.game-starting-notification {
+    display: none;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.95) 0%, rgba(189, 31, 45, 0.95) 100%);
+    border: 1.5px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    z-index: 1000;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    animation: slideInRight 0.4s ease;
+    max-width: 400px;
+}
+
+.notification-text {
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.game-starting-notification.show {
+    display: block;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(450px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(450px);
+        opacity: 0;
+    }
+}
+
+.game-starting-notification.hide {
+    animation: slideOutRight 0.4s ease;
+}
+
+/* Volume control styles (launcher settings) */
+.volume-control {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    text-align: left;
+}
+
+.volume-control .volume-row {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 360px;
+    height: 8px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--element-color) 0%, rgba(128,128,128,0.25) 100%);
+    outline: none;
+    transition: opacity 0.2s;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid var(--element-color);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+    cursor: pointer;
+}
+
+.volume-value {
+    min-width: 48px;
+    text-align: center;
+    font-weight: 700;
+    color: rgba(255,255,255,0.9);
+}
+
+.audio-mute-btn {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    border: 1.2px solid rgba(128,128,128,0.2);
+    background: linear-gradient(135deg, rgba(50,50,50,0.3) 0%, rgba(40,40,40,0.2) 100%);
+    color: var(--element-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.audio-mute-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.2);
+}
+
+/* Import a nice font for the server title */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&display=swap');
+
+.server-instance-title {
+    margin-top: 6px;
+    font-family: 'Montserrat', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    font-weight: 800;
+    font-size: 1.15rem; /* ajusta según prefieras */
+    color: #ffffff;
+    letter-spacing: -0.5px;
+    text-shadow: 0 6px 18px rgba(0,0,0,0.6);
+    line-height: 1;
+    max-width: 420px; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* responsive tweak */
+@media (max-width: 768px) {
+    .server-instance-title {
+        font-size: 1rem;
+    }
+}
+
+/* Dev console overlay (smaller + icon buttons + compact id area) */
+.dev-console {
+    position: fixed;
+    inset: 10% 8% 10% 8%;
+    background: rgba(12,12,12,0.96);
+    color: #eaeaea;
+    border: 1px solid rgba(255,255,255,0.04);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    z-index: 99999;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+    overflow: hidden;
+    max-height: 60vh;
+    min-height: 220px;
+}
+
+.dev-console-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid rgba(255,255,255,0.02);
+    gap: 0.6rem;
+}
+
+.dev-console-title {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #fff;
+}
+
+.dev-console-actions button {
+    margin-left: 0.3rem;
+    background: transparent;
+    border: none;
+    color: #fff;
+    padding: 6px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+}
+.dev-console-actions button:hover {
+    background: rgba(255,255,255,0.02);
+    transform: translateY(-1px);
+}
+
+.dev-console-body {
+    flex: 1;
+    overflow: auto;
+    padding: 0.6rem;
+    font-size: 0.82rem;
+    line-height: 1.35;
+    background: linear-gradient(180deg, rgba(0,0,0,0.0), rgba(0,0,0,0.03));
+    word-break: break-word;
+}
+
+/* log rows */
+.dev-log { padding: 3px 6px; margin-bottom: 4px; border-radius: 4px; font-size: 0.82rem; }
+.dev-log-log { color: #dcdcdc; }
+.dev-log-info { color: #9fe0ff; }
+.dev-log-warn { color: #ffd37a; background: rgba(255, 211, 122, 0.02); }
+.dev-log-error { color: #ff9b9b; background: rgba(255, 100, 100, 0.03); }
+.dev-log-debug { color: #b0c8ff; }
+
+.dev-console-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.35rem 0.6rem;
+    border-top: 1px solid rgba(255,255,255,0.02);
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.75);
+}
+.dev-console-footer .dev-console-id { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dev-console-footer .dev-id { font-weight: 800; margin-left: 6px; }
+
+/* small copy-id button */
+.dev-console-footer .dev-copy-id {
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.95rem;
+    padding: 4px;
+    border-radius: 6px;
+}
+.dev-console-footer .dev-copy-id:hover { background: rgba(255,255,255,0.02); transform: translateY(-1px); }
+
+/* instance popup: no animations, no text selection inside, cards non-clickable (only hover info) */
+.instance-popup {
+    animation: none !important;
+    transition: none !important;
+    user-select: none; /* prevent text selection inside popup */
+}
+
+/* ensure modal content also has no entrance animation */
+.instances-modal {
+    animation: none !important;
+}
+
+/* make instance cards inside popup appear as hover-only (no pointer click hint) */
+.instance-popup .instance-card {
+    cursor: default;
+    pointer-events: auto; /* keep hover events */
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+/* hover info placed inside the card, below the instance name */
+.instance-card {
+    position: relative; /* ensure child absolute positioning */
+}
+
+/* hover info inside the card, positioned bottom center under the name */
+.instance-card .instance-hover-info {
+    position: absolute;
+    left: 50%;
+    bottom: 12px; /* sit below the name area */
+    transform: translateX(-50%);
+    width: calc(100% - 28px);
+    max-width: 320px;
+    min-height: 44px;
+    border: 1px solid rgba(255,255,255,0.04);
+    color: #fff;
+    padding: 8px 10px;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    z-index: 5;
+    display: none;
+    font-size: 0.88rem;
+    text-align: left;
+    pointer-events: none; /* purely informational */
+}
+
+/* adjust inner lines */
+.instance-card .instance-hover-info .hover-title {
+    font-weight: 800;
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+}
+.instance-card .instance-hover-info .hover-line {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.9);
+    margin: 2px 0;
+}
+
+/* ensure card hover doesn't change global background (no body changes from CSS) */
+.instance-card:hover ~ .launcher-background-media,
+.instance-card:hover + .launcher-background-media {
+    /* no-op to make sure no CSS-based background switching occurs */
+}
+
+/* reduce overlay size so it doesn't overlap name too much on small cards */
+@media (max-width: 480px) {
+    .instance-card .instance-hover-info {
+        width: calc(100% - 12px);
+        font-size: 0.78rem;
+        bottom: 8px;
+    }
+}
+
+/* PayPal: animación mejorada (bouncing + tilt + glow) */
+@keyframes paypal-bounce {
+    0%   { transform: translateY(0) rotate(0deg) scale(1); filter: drop-shadow(0 12px 32px rgba(0,0,0,0.55)); }
+    30%  { transform: translateY(-8px) rotate(-1.2deg) scale(1.04); filter: drop-shadow(0 20px 44px rgba(0,0,0,0.6)); }
+    60%  { transform: translateY(-4px) rotate(0.8deg) scale(1.02); filter: drop-shadow(0 16px 36px rgba(0,0,0,0.58)); }
+    100% { transform: translateY(0) rotate(0deg) scale(1); filter: drop-shadow(0 12px 32px rgba(0,0,0,0.55)); }
+}
+
+.paypal-badge-link {
+    position: fixed;
+    left: calc(150px + 38px); /* ligeramente menos a la derecha */
+    bottom: 140px;            /* un poco más arriba/compacto */
+    z-index: 95;
+    pointer-events: auto;
+    display: inline-block;
+    transition: transform 220ms cubic-bezier(.2,.9,.2,1), box-shadow 220ms ease, opacity 180ms ease;
+    max-width: 40%;
+    text-decoration: none;
+    outline: none;
+    will-change: transform, filter;
+}
+
+.paypal-badge {
+    width: 220px; /* reducido */
+    border-radius: 10px;
+    display: block;
+    cursor: pointer;
+    transform-origin: left bottom;
+    transition: transform 220ms cubic-bezier(.2,.9,.2,1), filter 220ms ease;
+}
+
+/* hover: seguir con animación pero en escala menor */
+.paypal-badge-link:hover .paypal-badge,
+.paypal-badge-link:focus .paypal-badge {
+    animation: paypal-bounce 640ms both;
+    transform: translateY(-5px) rotate(-0.6deg) scale(1.04);
+    filter: drop-shadow(0 18px 44px rgba(0,123,255,0.16)) saturate(1.03);
+}
+
+/* Ajustes responsive para PayPal más pequeño */
+@media (max-width: 1400px) {
+    .paypal-badge { width: 190px; }
+    .paypal-badge-link { bottom: 25px; left: calc(140px + 24px); }
+}
+@media (max-width: 900px) {
+    .paypal-badge { width: 140px; }
+    .paypal-badge-link { left: calc(120px + 12px); bottom: 130px; }
+}
+@media (max-width: 480px) {
+    .paypal-badge { width: 100px; }
+    .paypal-badge-link { left: 10px; bottom: 150px; }
+}
+
+/* ========================= ADS PANEL ========================= */
+.ads-panel {
+    position: fixed;
+    right: 28px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 300px;
+    max-width: calc(40vw);
+    background: linear-gradient(180deg, rgba(18,18,18,0.92), rgba(10,10,10,0.9));
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 12px;
+    z-index: 92;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow: hidden;
+    cursor: default;
+    backdrop-filter: blur(6px) saturate(1.05);
+}
+
+.ads-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0 4px;
+}
+
+.ads-title {
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.9);
+    letter-spacing: 0.6px;
+}
+
+.ads-info {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.85);
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 160ms ease, transform 120ms ease;
+}
+.ads-info:hover { background: rgba(255,255,255,0.03); transform: translateY(-2px); }
+
+.ads-video-wrap {
+    position: relative;
+    width: 100%;
+    padding-top: 56%; /* 16:9 ratio */
+    border-radius: 8px;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(0,0,0,0.3), rgba(0,0,0,0.5));
+    border: 1px solid rgba(255,255,255,0.02);
+}
+
+.ads-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    cursor: pointer;
+    filter: saturate(0.98) contrast(0.98);
+}
+
+/* small overlay label bottom-right */
+.ads-overlay {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.8);
+    background: rgba(0,0,0,0.35);
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.03);
+}
+
+/* hide panel when empty (js toggles an 'empty' class) */
+.ads-panel.hidden { display: none !important; }
+
+/* responsive adjustments */
+@media (max-width: 1200px) {
+    .ads-panel { width: 360px; right: 18px; }
+    .paypal-badge { width: 240px; }
+}
+@media (max-width: 900px) {
+    .ads-panel { width: 260px; right: 12px; top: 60%; }
+    .paypal-badge { width: 170px; left: 18px; bottom: 140px; }
+}
+@media (max-width: 480px) {
+    .ads-panel { display: none; } /* esconder en pantallas muy pequeñas */
+}
+
+/* ==================== FLOATING INSTANCES SIDEBAR (desktop) ==================== */
+/* Make the instances sidebar float on desktop without breaking responsive rules */
+@media (min-width: 769px) {
+    .instances-sidebar {
+        position: fixed;
+        left: 15px;
+        top: 60px;
+        height: calc(100% - 88px - 88px);
+        border-radius: 12px;
+        z-index: 95;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(10px) saturate(1.02);
+        overflow: auto;
+        transition: transform 200ms cubic-bezier(.2,.9,.2,1), box-shadow 200ms ease;
+    }
+
+    /* Prevent main center content from being overlapped by the fixed sidebar */
+    .home-center {
+        margin-left: calc(180px + 40px); /* sidebar width + gap */
+        transition: margin-left 200ms cubic-bezier(.2,.9,.2,1);
+    }
+
+    /* Slight tweak for PayPal badge positioning when sidebar is floating */
+    .paypal-badge-link {
+        left: calc(180px + 38px); /* keep consistent spacing with new width */
+    }
+}
+
+/* asegurar que los avatars llenen el ancho y no provoquen reflow al activarse */
+.instance-avatars {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 1.2rem 0.8rem;
+    overflow-y: auto;
+    flex: 1;
+    align-items: stretch; /* asegurar que los hijos se extiendan al 100% de ancho */
+}
+
+/* forzar ancho consistente en cada avatar para evitar diferencias visuales */
+.instance-avatar {
+    width: 95%; /* siempre full width dentro del contenedor */
+    min-width: 0;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: var(--background-element);
+    background-position: center;
+    background-size: cover;
+    border: 2px solid rgba(128, 128, 128, 0.15);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    display: block;
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.28s, filter 0.28s;
+    position: relative;
+    image-rendering: pixelated;
+    flex-shrink: 0;
+}
+
+/* No cambiar layout (width/margin) al activarse: usar transform/scale sólo */
+.instance-avatar.active {
+    /* mantener tamaño en flujo, solo aplicar efecto visual */
+    width: 95%;
+    margin: 0;
+    transform: translateY(-6px) scale(1.03);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow:
+        0 10px 26px rgba(0,0,0,0.55),
+        inset 0 6px 18px rgba(255,255,255,0.02);
+    filter: saturate(1.06) brightness(1.02);
+}
+
+/* ajustar hover manteniendo el mismo flujo */
+.instance-avatar.active:hover {
+    transform: translateY(-8px) scale(1.04);
+    box-shadow:
+        0 12px 30px rgba(0,0,0,0.6),
+        inset 0 8px 22px rgba(255,255,255,0.03);
+}
+
+/* Forzar color neutral en scrollbar para que no salga barra morada */
+.instance-avatars::-webkit-scrollbar-thumb {
+    background: rgba(128, 128, 128, 0.3) !important;
+    border-radius: 3px;
+}
+
+/* Evitar outlines / focus visuales dentro de la sidebar (quita "cosito morado") */
+.instances-sidebar *:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* como medida adicional, ocultar cualquier pseudo-elemento inesperado dentro de la sidebar */
+.instances-sidebar::after,
+.instances-sidebar::before {
+    display: none !important;
+}
+
+.instance-popup {
+    /* keep non-destructive defaults, but provide a polished visible state via .show */
+    display: none; /* unchanged default */
+    align-items: center;
+    justify-content: center;
+}
+
+/* visible state: soft scale + fade + glass backdrop */
+.instance-popup.show {
+    display: flex !important;
+    animation: fadeIn 260ms cubic-bezier(.2,.9,.2,1);
+    backdrop-filter: blur(10px) saturate(1.05);
+}
+
+/* modal shell: subtle glass, more padding and smoother entrance */
+.instances-modal {
+    /* keep existing layout but improve visual polish */
+    background: linear-gradient(180deg, rgba(28,28,28,0.92), rgba(14,14,14,0.88));
+    border: 1px solid rgba(255,255,255,0.04);
+    box-shadow: 0 30px 80px rgba(6,6,6,0.85), inset 0 1px 0 rgba(255,255,255,0.02);
+    padding: 16px;
+    gap: 12px;
+    border-radius: 16px;
+    transform-origin: center;
+    transition: transform 260ms cubic-bezier(.2,.9,.2,1), opacity 200ms ease;
+}
+
+/* gentle scale-in when popup is shown (higher specificity to override earlier none !important) */
+.instance-popup.show .instances-modal {
+    transform: translateY(0) scale(1);
+}
+
+/* header refinement: tighter spacing, clearer CTA area and accessible focus */
+.modal-header {
+    padding: 18px 22px;
+    gap: 14px;
+    align-items: center;
+    background: linear-gradient(180deg, rgba(30,30,30,0.88), rgba(18,18,18,0.9));
+    border-radius: 12px 12px 0 0;
+}
+
+/* title: slightly larger, crisp weight */
+.modal-header h2 {
+    font-size: 1.85rem;
+    letter-spacing: -0.4px;
+    margin: 0;
+}
+
+/* Close CTA refinement (visible, consistent with theme) */
+.close-popup {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.04);
+    color: #ffdada;
+    transition: transform 180ms ease, background 160ms ease, color 160ms ease;
+}
+.close-popup:hover {
+    transform: scale(1.06) rotate(0deg);
+    background: rgba(255,255,255,0.04);
+}
+
+/* modal content: comfortable padding and subtle inner scroll visual */
+.modal-content {
+    padding: 18px;
+    gap: 12px;
+    border-radius: 10px;
+    transition: background 180ms ease;
+    background: linear-gradient(180deg, rgba(18,18,18,0.00), rgba(12,12,12,0.02));
+}
+
+/* instances grid: more breathing room and consistent min width */
+.instances-List {
+    gap: 1.6rem;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+/* Instance card: glass overlay, hover lift and CTA reveal */
+.instance-card {
+    height: 150px; /* marginally taller for comfort */
+    border-radius: 14px;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(30,30,30,0.55), rgba(18,18,18,0.55));
+    border: 1px solid rgba(255,255,255,0.03);
+    transition: transform 220ms cubic-bezier(.2,.9,.2,1), box-shadow 220ms ease, border-color 220ms ease;
+    position: relative;
+}
+
+/* hover: lift, stronger border and reveal subtle inner glow */
+.instance-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 22px 46px rgba(0,0,0,0.6), inset 0 6px 20px rgba(255,255,255,0.015);
+    border-color: rgba(255,255,255,0.06);
+}
+
+/* overlay area centered at bottom with CTA, hidden by default */
+.instance-card .card-cta {
+    position: absolute;
+    left: 50%;
+    bottom: 12px;
+    transform: translateX(-50%) translateY(6px);
+    opacity: 0;
+    transition: opacity 180ms ease, transform 200ms cubic-bezier(.2,.9,.2,1);
+    z-index: 6;
+    pointer-events: none;
+}
+
+/* show CTA on hover */
+.instance-card:hover .card-cta {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* CTA button visuals (small, rounded, consistent color) */
+.instance-card .card-cta .btn {
+    background: linear-gradient(90deg, var(--element-color) 0%, rgba(var(--element-color-rgb),0.85) 100%);
+    color: #fff;
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    border: none;
+    box-shadow: 0 8px 20px rgba(var(--element-color-rgb),0.22);
+    cursor: pointer;
+    transition: transform 140ms ease, box-shadow 140ms ease;
+}
+.instance-card .card-cta .btn:active { transform: translateY(1px); }
+
+/* hover info panel inside card (keeps previous behavior but slightly refined) */
+.instance-card .instance-hover-info {
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 0.88rem;
+    bottom: 14px;
+    width: calc(100% - 36px);
+    max-width: 360px;
+    box-shadow: 0 14px 36px rgba(0,0,0,0.6);
+}
+
+/* Locked card style gets a softer overlay */
+.locked-code-card {
+    opacity: 0.88;
+    filter: grayscale(70%) contrast(0.9);
+}
+.locked-code-card .instance-banner-overlay {
+    background: linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.6));
+}
+
+/* Instance elements (cards inside modal/list) adopt the refined style */
+.instance-elements {
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.03);
+    transition: transform 200ms ease, box-shadow 200ms ease, background 180ms ease;
+    background: linear-gradient(180deg, rgba(34,34,34,0.45), rgba(22,22,22,0.38));
+}
+.instance-elements:hover {
+    transform: translateY(-6px);
+}
+
+/* ========================= Bottom Action Bar: unified look with modal ========================= */
+
+/* modernized action bar: glass, rounded, slightly elevated */
+.home-actions {
+    position: fixed;
+    top: 570px;
+    left: 370px;
+
+    padding: 12px 20px;
+    width: 35%;
+    height: 8%;
+    gap: 1.2rem;
+    border-radius: 14px;
+    margin: 14px;
+    background: linear-gradient(180deg, rgba(18, 18, 18, 0.6), rgba(12, 12, 12, 0.55));
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(8px) saturate(1.03);
+}
+
+/* Instance-select: clearer focus, pill look and accessible outline */
+.instance-select {
+    padding: 10px 16px;
+    border-radius: 12px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.04);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+    transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+.instance-select:focus,
+.instance-select:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(var(--element-color-rgb),0.12);
+    border-color: var(--element-color);
+}
+
+/* play button container: stronger presence, consistent radius and depth */
+.play-instance {
+    border-radius: 12px;
+    padding: 6px;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+}
+.play-instance .play-btn {
+    padding: 10px 22px;
+    border-radius: 10px;
+    font-size: 1.05rem;
+}
+.play-instance:hover { transform: translateY(-3px); }
+
+/* settings / audio buttons aligned with new pill style */
+.home-actions .settings-btn,
+.home-actions .audio-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+}
+
+/* audio active state more pronounced */
+.home-actions .audio-btn.playing {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 12px 28px rgba(var(--element-color-rgb),0.24);
+}
+
+/* small screens: conserve space but keep the refined style */
+@media (max-width: 768px) {
+    .home-actions {
+        margin: 8px;
+        padding: 10px;
+        gap: 8px;
+        border-radius: 10px;
+    }
+    .instance-select { padding: 8px 12px; }
+    .home-actions .settings-btn,
+    .home-actions .audio-btn { width: 44px; height: 44px; }
+}
+
+/* Accessibility: ensure keyboard users can see focus on interactive small controls */
+.home-actions button:focus,
+.instance-select:focus,
+.play-btn:focus,
+.close-popup:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(var(--element-color-rgb),0.10);
+}
+
+/* Cuando el popup esté en modo sólo-código: ocultar la lista de instancias y evitar interacciones */
+.instance-popup.code-only .instances-List,
+.instance-popup.code-only .instances-List .instance-card {
+    display: none !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+/* Overrides: make sidebar and avatars smaller on desktop (high specificity, placed at end) */
+@media (min-width: 769px) {
+    /* Narrower floating sidebar */
+    .instances-sidebar {
+        width: 120px !important;
+        left: 15px;
+        top: 60px;
+        height: calc(100% - 88px - 88px);
+        border-radius: 12px;
+        z-index: 95;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+               backdrop-filter: blur(10px) saturate(1.02);
+        overflow: auto;
+        transition: transform 200ms cubic-bezier(.2,.9,.2,1), box-shadow 200ms ease;
+    }
+
+    /* Prevent main center content from being overlapped by the fixed (now-narrower) sidebar */
+    .home-center {
+        margin-left: calc(120px + 40px) !important; /* sidebar width + gap */
+        transition: margin-left 200ms cubic-bezier(.2,.9,.2,1);
+    }
+
+    /* Tweak paypal badge spacing to match new sidebar width */
+    .paypal-badge-link {
+        left: calc(120px + 38px) !important;
+    }
+
+    /* Make instance avatars small and square inside the floating sidebar */
+    .instances-sidebar .instance-avatars {
+        align-items: center; /* center the small avatars */
+        padding: 8px 0.6rem;
+    }
+    .instances-sidebar .instance-avatar {
+        width: 64px !important;
+        height: 64px !important;
+        min-width: 64px !important;
+        aspect-ratio: auto !important;
+        border-radius: 10px !important;
+        margin: 6px auto !important;
+        display: block;
+        box-shadow: 0 8px 18px rgba(0,0,0,0.5);
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    /* Ensure active avatar doesn't expand layout; keep visual transform only */
+    .instances-sidebar .instance-avatar.active {
+        width: 90px !important;
+        transform: translateY(-6px) scale(1.04) !important;
+    }
+
+    /* Scrollbar tweak for narrow sidebar */
+    .instances-sidebar::-webkit-scrollbar { width: 8px; }
+    .instances-sidebar::-webkit-scrollbar-thumb { border-radius: 6px; background: rgba(128,128,128,0.25); }
+}
+
+/* Also apply a general smaller default for non-floating sidebar variants */
+.instances-sidebar {
+    width: 120px !important;
+}
+
+/* Reduce avatar size in the normal stacked sidebar (non-fixed flow) */
+.instance-avatars .instance-avatar {
+    width: 90px !important;
+    height: 90px !important;
+    min-width: 90px !important;
+    aspect-ratio: auto !important;
+    border-radius: 10px;
+    margin: 8px auto;
+}
+
+/* Adjust responsive breakpoints that referenced wider sidebar values */
+@media (max-width: 1400px) {
+    .paypal-badge-link { left: calc(0px + 20px) !important }
+}
+@media (max-width: 900px) {
+    /* keep previous responsive behavior but ensure no conflicts */
+    .instances-sidebar { width: 120px !important; }
+    .paypal-badge-link { left: calc(120px + 12px) !important; bottom: 130px; }
+}
+
